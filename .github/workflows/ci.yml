@@ -18,4 +18,5 @@ jobs:
         with:
           node-version: '24'
       - name: Validate Make IML JSON files
-        run: node -e "require('fs').readdirSync('.', { recursive: true }).filter((file) => file.endsWith('.imljson')).forEach((file) => JSON.parse(require('fs').readFileSync(file)))"
+        run: |
+          node -e "require('fs').readdirSync('.', { recursive: true }).filter((file) => file.endsWith('.imljson')).forEach((file) => JSON.parse(require('fs').readFileSync(file)))"
