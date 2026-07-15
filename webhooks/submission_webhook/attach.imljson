@@ -7,12 +7,12 @@
             "formId": "{{parameters.formId}}",
             "targetUrl": "{{webhook.url}}",
             "provider": "make",
-            "eventType": "submission_created"
+            "eventType": "{{parameters.eventType}}"
         }
     },
     "response": {
         "data": {
-            "webhookId": "{{body.data.id}}"
+            "subscriptionId": "{{body.data.subscriptionId}}"
         }
     }
 }

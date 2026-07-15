@@ -1,11 +1,51 @@
 {
-    "baseUrl": "{{parameters.convexSiteUrl}}/api/v1",
+    "baseUrl": "https://api.formbase.so/api/v1",
     "headers": {
-        "Authorization": "Bearer {{connection.apiKey}}",
-        "Content-Type": "application/json"
+        "Authorization": "Bearer {{connection.accessToken}}"
     },
     "response": {
-        "valid": { "condition": "{{body.ok}}" },
-        "error": { "message": "[{{body.error.code}}] {{body.error.message}}" }
+        "valid": {
+            "condition": "{{body.ok == true}}"
+        },
+        "error": {
+            "400": {
+                "type": "DataError",
+                "message": "[{{statusCode}}/{{body.error.code}}] {{body.error.message}}"
+            },
+            "401": {
+                "type": "InvalidAccessTokenError",
+                "message": "[{{statusCode}}/{{body.error.code}}] {{body.error.message}}"
+            },
+            "402": {
+                "type": "InvalidConfigurationError",
+                "message": "[{{statusCode}}/{{body.error.code}}] {{body.error.message}}"
+            },
+            "403": {
+                "type": "InvalidConfigurationError",
+                "message": "[{{statusCode}}/{{body.error.code}}] {{body.error.message}}"
+            },
+            "404": {
+                "type": "DataError",
+                "message": "[{{statusCode}}/{{body.error.code}}] {{body.error.message}}"
+            },
+            "409": {
+                "type": "DuplicateDataError",
+                "message": "[{{statusCode}}/{{body.error.code}}] {{body.error.message}}"
+            },
+            "429": {
+                "type": "RateLimitError",
+                "message": "[{{statusCode}}/{{body.error.code}}] {{body.error.message}}"
+            },
+            "500": {
+                "type": "ConnectionError",
+                "message": "[{{statusCode}}/{{body.error.code}}] {{body.error.message}}"
+            },
+            "message": "[{{statusCode}}/{{body.error.code}}] {{body.error.message}}"
+        }
+    },
+    "log": {
+        "sanitize": [
+            "request.headers.authorization"
+        ]
     }
 }

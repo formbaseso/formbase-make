@@ -17,6 +17,6 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '24'
-      - name: Validate Make IML JSON files
-        run: |
-          node -e "require('fs').readdirSync('.', { recursive: true }).filter((file) => file.endsWith('.imljson')).forEach((file) => JSON.parse(require('fs').readFileSync(file)))"
+          cache: npm
+      - run: npm ci
+      - run: npm test

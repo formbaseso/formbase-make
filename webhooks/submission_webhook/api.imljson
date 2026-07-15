@@ -1,14 +1,8 @@
 {
-    "verification": {
-        "respond": {
-            "type": "json",
-            "status": 200,
-            "body": {}
-        }
-    },
     "respond": {
         "type": "json",
         "status": 200,
         "body": {}
-    }
+    },
+    "output": "{{body}}"
 }

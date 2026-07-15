@@ -1,0 +1,5 @@
+[
+    "api:read",
+    "api:write",
+    "offline_access"
+]

@@ -1,0 +1,51 @@
+{
+    "eventId": "evt_01HX9G8N0F4P2K7Q3S5V8Y1Z2A",
+    "eventType": "SUBMIT_RESPONSE",
+    "eventTimestamp": "2026-04-26T14:32:18.412Z",
+    "form": {
+        "id": "form_2pmJk8Lq3RxYn4Wt5VbCdE",
+        "name": "Customer Feedback"
+    },
+    "submission": {
+        "id": "sub_9aB2cD4eF6gH8iJ0kL2mN4",
+        "respondentEmail": "jane.doe@example.com",
+        "submittedAt": "2026-04-26T14:32:18.000Z",
+        "submissionPdfLink": "https://api.formbase.so/api/storage/00000000-0000-4000-8000-000000000000",
+        "language": "en"
+    },
+    "fields": [
+        {
+            "fieldId": "fld_name",
+            "key": "fld_name",
+            "title": "Your name",
+            "type": "text",
+            "value": {
+                "raw": "Jane Doe",
+                "display": "Jane Doe"
+            }
+        },
+        {
+            "fieldId": "fld_rating",
+            "key": "fld_rating",
+            "title": "How would you rate us?",
+            "type": "rating",
+            "value": {
+                "raw": 5,
+                "display": "5"
+            }
+        },
+        {
+            "fieldId": "fld_attendee",
+            "key": "fld_attendee",
+            "title": "Attendee name",
+            "type": "text",
+            "value": {
+                "raw": [
+                    "Grace Hopper",
+                    "Alan Turing"
+                ],
+                "display": "Grace Hopper, Alan Turing"
+            }
+        }
+    ]
+}

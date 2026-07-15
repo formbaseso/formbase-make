@@ -1,0 +1,17 @@
+[
+    {
+        "name": "method",
+        "type": "text",
+        "label": "Method",
+        "required": true,
+        "help": "formbase API method name, for example `me.get`, `forms.get`, or `submissions.list`. See https://docs.formbase.so/developers/rest-api."
+    },
+    {
+        "name": "params",
+        "type": "json",
+        "label": "Parameters",
+        "required": true,
+        "default": {},
+        "help": "JSON object containing method parameters. Use `{}` when the method takes no parameters."
+    }
+]

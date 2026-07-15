@@ -11,7 +11,7 @@
     },
     {
         "name": "eventTimestamp",
-        "type": "text",
+        "type": "date",
         "label": "Event Timestamp"
     },
     {
@@ -29,8 +29,10 @@
         "label": "Submission",
         "spec": [
             { "name": "id", "type": "text", "label": "Submission ID" },
-            { "name": "respondentEmail", "type": "text", "label": "Respondent Email" },
-            { "name": "submittedAt", "type": "text", "label": "Submitted At" }
+            { "name": "respondentEmail", "type": "email", "label": "Respondent Email" },
+            { "name": "submittedAt", "type": "date", "label": "Submitted At" },
+            { "name": "submissionPdfLink", "type": "url", "label": "Submission PDF Link" },
+            { "name": "language", "type": "text", "label": "Submission Language" }
         ]
     },
     {
@@ -41,6 +43,7 @@
             "type": "collection",
             "spec": [
                 { "name": "fieldId", "type": "text", "label": "Field ID" },
+                { "name": "key", "type": "text", "label": "Field Key" },
                 { "name": "title", "type": "text", "label": "Title" },
                 { "name": "type", "type": "text", "label": "Type" },
                 {
@@ -48,7 +51,6 @@
                     "type": "collection",
                     "label": "Value",
                     "spec": [
-                        { "name": "raw", "type": "any", "label": "Raw" },
                         { "name": "display", "type": "text", "label": "Display" }
                     ]
                 }

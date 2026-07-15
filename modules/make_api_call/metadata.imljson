@@ -1,0 +1,7 @@
+{
+    "name": "make_api_call",
+    "label": "Make an API Call",
+    "description": "Sends a custom API call to formbase. Use this for API methods that are not covered by other modules.",
+    "type": "universal",
+    "connection": "formbase"
+}

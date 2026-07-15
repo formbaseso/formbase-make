@@ -4,9 +4,29 @@
         "type": "select",
         "label": "Form",
         "required": true,
+        "mappable": false,
         "help": "The formbase form to watch for new submissions.",
         "options": {
-            "store": "rpc://formbase@1/listForms"
+            "store": "rpc://listForms"
         }
+    },
+    {
+        "name": "eventType",
+        "type": "select",
+        "label": "Event",
+        "required": true,
+        "mappable": false,
+        "default": "submission_created",
+        "help": "Abandoned submissions require partial-submission tracking on the formbase workspace.",
+        "options": [
+            {
+                "label": "Submission created",
+                "value": "submission_created"
+            },
+            {
+                "label": "Submission abandoned",
+                "value": "submission_abandoned"
+            }
+        ]
     }
 ]

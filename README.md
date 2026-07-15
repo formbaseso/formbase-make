@@ -1,73 +1,146 @@
-# formbase Make Custom App (IML mirror)
+# formbase Make integration
 
-This folder is a **git-tracked mirror** of the formbase custom app definition that lives in the [Make Developer Hub](https://www.make.com/en/help/apps/about-developing-apps). It is **not** a runnable bundle — Make Developer Hub is the source of truth at runtime. We keep these files in git so we get code review, version history, and a clear onboarding path for new contributors.
+Git-tracked mirror of formbase custom app configuration for [Make Developer Hub](https://developers.make.com/custom-apps-documentation/). Make hosts and executes these definitions; this repository supplies reviewable IML JSON, contract tests, and deployment instructions.
 
-## What lives here
+## Integration surface
 
-Each `.imljson` file mirrors one field in the Make Developer Hub UI. The folders correspond directly to the sidebar sections in the Hub:
+- OAuth 2.0 authorization-code connection with mandatory PKCE S256
+- Rotating access and refresh tokens (`api:read api:write offline_access`)
+- Workspace-scoped, cursor-paginated form picker
+- Attached dedicated webhook with automatic subscribe/unsubscribe
+- `submission_created` and `submission_abandoned` events
+- Dynamic sample payload from `submissions.sample`
+- Universal **Make an API Call** module for other formbase JSON-RPC methods
+- Current webhook fields: event, form, submission email/date/PDF/language, and answer fields
 
-```
+Implementation follows current formbase [n8n](https://github.com/formbaseso/n8n-nodes-formbase) and [Zapier](https://github.com/formbaseso/formbase-zapier) integrations. Canonical API contract lives in [formbaseso/formbase](https://github.com/formbaseso/formbase/tree/main/packages/convex/src/http/external_api).
+
+## Repository map
+
+```text
 formbase-make/
-├── app/                        # App-level config (Base, Metadata, Parameters)
-├── connections/formbase/       # API-key connection
-├── modules/watch_submissions/  # Instant trigger module
-├── webhooks/submission_webhook/# Web webhook backing the trigger
-└── rpcs/list_forms/            # Dynamic select RPC for the formId picker
+├── app/                         # Base and app settings
+├── connections/formbase/        # OAuth connection, common data, scopes
+├── modules/watch_submissions/   # Instant trigger
+├── modules/make_api_call/        # Universal JSON-RPC module
+├── webhooks/submission_webhook/ # Attached dedicated webhook
+├── rpcs/list_forms/             # Paginated form options
+├── rpcs/get_sample_submission/  # Dynamic trigger sample
+└── test/                         # Semantic contract tests
 ```
 
-## Sync workflow
+## Validate locally
 
-Make Developer Hub does not have a public CLI/git integration for community apps, so syncing is **manual** in both directions.
-
-### Hub → git (export)
-
-1. Edit the app in Make Developer Hub.
-2. For each field you changed, click the field and copy the JSON.
-3. Paste into the matching `.imljson` file here.
-4. Commit with a `*(make): ...` conventional message describing the change.
-5. Open a PR for review.
-
-### git → Hub (import)
-
-1. Review and merge the PR in this repo.
-2. In Make Developer Hub, open the corresponding field.
-3. Paste the contents of each updated `.imljson` file into the matching field.
-4. Save and re-publish the app version.
-
-## File-to-Hub field mapping
-
-| File                                             | Hub location                                                                    |
-| ------------------------------------------------ | ------------------------------------------------------------------------------- |
-| `app/base.imljson`                               | App → Base                                                                      |
-| `app/metadata.imljson`                           | App → General (name, label, description, version, language, countries, private) |
-| `app/parameters.imljson`                         | App → Parameters                                                                |
-| `connections/formbase/metadata.imljson`          | Connections → formbase → General                                                |
-| `connections/formbase/parameters.imljson`        | Connections → formbase → Parameters                                             |
-| `connections/formbase/communication.imljson`     | Connections → formbase → Communication                                          |
-| `modules/watch_submissions/metadata.imljson`     | Modules → watch_submissions → General                                           |
-| `modules/watch_submissions/api.imljson`          | Modules → watch_submissions → Communication                                     |
-| `modules/watch_submissions/parameters.imljson`   | Modules → watch_submissions → Mappable parameters                               |
-| `modules/watch_submissions/interface.imljson`    | Modules → watch_submissions → Interface                                         |
-| `modules/watch_submissions/samples.imljson`      | Modules → watch_submissions → Samples                                           |
-| `webhooks/submission_webhook/metadata.imljson`   | Webhooks → submission_webhook → General                                         |
-| `webhooks/submission_webhook/api.imljson`        | Webhooks → submission_webhook → Communication                                   |
-| `webhooks/submission_webhook/parameters.imljson` | Webhooks → submission_webhook → Parameters                                      |
-| `webhooks/submission_webhook/attach.imljson`     | Webhooks → submission_webhook → Attach                                          |
-| `webhooks/submission_webhook/detach.imljson`     | Webhooks → submission_webhook → Detach                                          |
-| `rpcs/list_forms/metadata.imljson`               | RPCs → listForms → General                                                      |
-| `rpcs/list_forms/api.imljson`                    | RPCs → listForms → Communication                                                |
-
-## Validation
-
-Before committing, ensure every `.imljson` file is valid JSON:
-
-```sh
-cd formbase-make
-node -e "require('fs').readdirSync('.', { recursive: true }).filter(f => f.endsWith('.imljson')).forEach(f => JSON.parse(require('fs').readFileSync(f)))"
+```bash
+cd /Users/onurhakbilen/git/formbase-make
+npm ci
+npm test
 ```
 
-## Reference
+Tests validate JSON syntax plus OAuth, PKCE, refresh rotation, sanitization, API envelopes, pagination, webhook lifecycle, output interface, dynamic sample, and universal-module contracts. They do not execute Make's hosted IML runtime; complete live smoke test after importing definitions.
 
-- Make custom-app docs: https://docs.make.com/custom-apps-documentation/
-- Formbase JSON-RPC API base URL: `https://api.formbase.so/api/v1`
-- [Formbase API methods](https://docs.formbase.so/developers/rest-api)
+## 1. Deploy formbase OAuth support
+
+Make needs fixed confidential client credentials. Backend change adds idempotent `seedMakeOAuthClient`, matching existing Zapier seed strategy.
+
+Deploy changed backend first:
+
+```bash
+cd /Users/onurhakbilen/git/formbase/packages/convex
+pnpm convex deploy
+```
+
+Create one long random secret in password manager. Set it interactively so value does not enter shell history:
+
+```bash
+pnpm convex env set --prod MAKE_OAUTH_CLIENT_SECRET
+```
+
+Seed production client:
+
+```bash
+pnpm convex run --prod internal/oauthClients:seedMakeOAuthClient \
+  '{"redirectUris":["https://www.make.com/oauth/cb/app"]}'
+```
+
+Expected result:
+
+```json
+{ "clientId": "fboc_make", "created": true }
+```
+
+Re-running updates redirect URIs and secret hash, returning `created: false`. Keep plaintext secret; same value goes into Make encrypted Common data. Never commit it to this repository.
+
+## 2. Create components in Make Developer Hub
+
+Create private app named `formbase`, then create components in this order:
+
+1. OAuth 2.0 connection `formbase`
+2. RPC `listForms`
+3. RPC `getSampleSubmission`
+4. attached dedicated web webhook `submission_webhook`
+5. instant trigger `watch_submissions`
+6. universal module `make_api_call`
+
+Paste each file into corresponding Hub editor:
+
+| Repository file | Make Developer Hub field |
+| --- | --- |
+| `app/base.imljson` | App → Base |
+| `app/parameters.imljson` | App → Parameters |
+| `connections/formbase/common.imljson` | Connection → Common data |
+| `connections/formbase/scope.imljson` | Connection → Default scope |
+| `connections/formbase/parameters.imljson` | Connection → Parameters |
+| `connections/formbase/communication.imljson` | Connection → Communication |
+| `rpcs/list_forms/api.imljson` | `listForms` → Communication |
+| `rpcs/get_sample_submission/api.imljson` | `getSampleSubmission` → Communication |
+| `webhooks/submission_webhook/parameters.imljson` | Webhook → Parameters |
+| `webhooks/submission_webhook/attach.imljson` | Webhook → Attach |
+| `webhooks/submission_webhook/detach.imljson` | Webhook → Detach |
+| `webhooks/submission_webhook/api.imljson` | Webhook → Communication |
+| `modules/watch_submissions/parameters.imljson` | Instant trigger → Static parameters |
+| `modules/watch_submissions/api.imljson` | Instant trigger → Communication |
+| `modules/watch_submissions/interface.imljson` | Instant trigger → Interface |
+| `modules/watch_submissions/samples.imljson` | Instant trigger → Samples |
+| `modules/make_api_call/parameters.imljson` | Universal module → Static parameters |
+| `modules/make_api_call/expect.imljson` | Universal module → Mappable parameters |
+| `modules/make_api_call/api.imljson` | Universal module → Communication |
+| `modules/make_api_call/interface.imljson` | Universal module → Interface |
+| `modules/make_api_call/samples.imljson` | Universal module → Samples |
+
+General settings come from each `metadata.imljson`. Set component connection/webhook links exactly as declared there.
+
+Before saving connection Common data, replace `REPLACE_IN_MAKE_DEVELOPER_HUB` with same plaintext secret stored in `MAKE_OAUTH_CLIENT_SECRET`. Do not modify repository copy.
+
+OAuth redirect must remain `oauth.localRedirectUri`. For hosted Make this resolves to registered `https://www.make.com/oauth/cb/app` callback recommended for reviewed apps.
+
+## 3. Live smoke test
+
+Create test scenario in Make:
+
+1. Add **formbase → Watch Submissions**.
+2. Create connection. Sign in, select workspace, approve consent. Connection label should show workspace name.
+3. Select form and `Submission created`.
+4. Click **Run once**, then submit selected form.
+5. Confirm one bundle contains `eventId`, `eventType`, `eventTimestamp`, form data, submission PDF/language, and fields. `fields[].value.raw` remains dynamically typed; `display` is stable text.
+6. Deactivate scenario. Use **Make an API Call** with method `webhooks.list` and selected `formId` to confirm subscription was removed.
+7. Reactivate and repeat with `Submission abandoned` if workspace has partial-submission tracking.
+8. Run error scenario with unknown API method; confirm readable `METHOD_NOT_FOUND` error.
+9. If review is planned, test form picker against workspace with more than 100 forms and retain execution logs showing pagination.
+
+## 4. Publish
+
+- For team-only use, save scenario in organization and confirm app installation.
+- For invite-link distribution, click **Publish**. Publishing cannot be undone and published components cannot be deleted.
+- For Make marketplace, expose both modules, run fresh test scenarios, then complete **Review** tab with API docs, support contact, and scenario links.
+
+Make review requires sanitization, error handling, interfaces, pagination, limits, universal API module, and recent successful/error scenario logs. This mirror includes code requirements; live logs must be generated in Make.
+
+## References
+
+- [Make OAuth 2.0 and PKCE](https://developers.make.com/custom-apps-documentation/app-components/connections/oauth2)
+- [Make attached webhooks](https://developers.make.com/custom-apps-documentation/app-components/webhooks/dedicated/attached)
+- [Make instant triggers](https://developers.make.com/custom-apps-documentation/app-components/modules/instant-trigger)
+- [Make app review prerequisites](https://developers.make.com/custom-apps-documentation/app-review/prerequisites)
+- [formbase REST API](https://docs.formbase.so/developers/rest-api)
+- [formbase webhooks](https://docs.formbase.so/developers/webhooks-reference)

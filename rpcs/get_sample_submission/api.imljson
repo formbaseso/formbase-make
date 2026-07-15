@@ -1,0 +1,13 @@
+{
+    "url": "/",
+    "method": "POST",
+    "body": {
+        "method": "submissions.sample",
+        "params": {
+            "formId": "{{parameters.formId}}"
+        }
+    },
+    "response": {
+        "output": "{{body.data}}"
+    }
+}
