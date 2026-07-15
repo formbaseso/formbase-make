@@ -8,7 +8,7 @@ Git-tracked mirror of formbase custom app configuration for [Make Developer Hub]
 - Rotating access and refresh tokens (`api:read api:write offline_access`)
 - Workspace-scoped, cursor-paginated form picker
 - Attached dedicated webhook with automatic subscribe/unsubscribe
-- `submission_created` and `submission_abandoned` events
+- `submission_created` and `submission_abandoned` events, with required 12-hour, 1-day, 3-day, or 1-week idle windows for abandoned submissions
 - Dynamic sample payload from `submissions.sample`
 - Universal **Make an API Call** module for other formbase JSON-RPC methods
 - Current webhook fields: event, form, submission email/date/PDF/language, and answer fields
@@ -79,8 +79,8 @@ Create private app named `formbase`, then create components in this order:
 2. RPC `listForms`
 3. RPC `getSampleSubmission`
 4. attached dedicated web webhook `submission_webhook`
-5. instant trigger `watch_submissions`
-6. universal module `make_api_call`
+5. instant trigger `watchSubmissions`
+6. universal module `makeApiCall`
 
 Paste each file into corresponding Hub editor:
 
@@ -124,7 +124,7 @@ Create test scenario in Make:
 4. Click **Run once**, then submit selected form.
 5. Confirm one bundle contains `eventId`, `eventType`, `eventTimestamp`, form data, submission PDF/language, and fields. `fields[].value.raw` remains dynamically typed; `display` is stable text.
 6. Deactivate scenario. Use **Make an API Call** with method `webhooks.list` and selected `formId` to confirm subscription was removed.
-7. Reactivate and repeat with `Submission abandoned` if workspace has partial-submission tracking.
+7. Reactivate with `Submission abandoned`, select an idle window, save a partial response, and leave it unchanged past that window. The backend sweeps hourly, so delivery can occur up to about one hour after the selected threshold.
 8. Run error scenario with unknown API method; confirm readable `METHOD_NOT_FOUND` error.
 9. If review is planned, test form picker against workspace with more than 100 forms and retain execution logs showing pagination.
 

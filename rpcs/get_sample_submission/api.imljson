@@ -1,10 +1,10 @@
 {
-    "url": "/",
+    "url": "/api/v1",
     "method": "POST",
     "body": {
         "method": "submissions.sample",
         "params": {
-            "formId": "{{parameters.formId}}"
+            "formId": "{{webhook.formId}}"
         }
     },
     "response": {

@@ -1,11 +1,13 @@
 {
-    "url": "/",
+    "url": "/api/v1",
     "method": "POST",
     "body": {
         "method": "{{parameters.method}}",
         "params": "{{parameters.params}}"
     },
     "response": {
-        "output": "{{body.data}}"
+        "output": {
+            "data": "{{body.data}}"
+        }
     }
 }

@@ -1,5 +1,5 @@
 {
-    "url": "/",
+    "url": "/api/v1",
     "method": "POST",
     "body": {
         "method": "webhooks.create",
@@ -7,7 +7,8 @@
             "formId": "{{parameters.formId}}",
             "targetUrl": "{{webhook.url}}",
             "provider": "make",
-            "eventType": "{{parameters.eventType}}"
+            "eventType": "{{parameters.eventType}}",
+            "idleWindow": "{{parameters.idleWindow}}"
         }
     },
     "response": {

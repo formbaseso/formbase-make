@@ -1,5 +1,5 @@
 {
-    "url": "/",
+    "url": "/api/v1",
     "method": "POST",
     "body": {
         "method": "forms.list",

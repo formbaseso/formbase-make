@@ -1,1 +1,61 @@
-[]
+[
+    {
+        "name": "formId",
+        "type": "select",
+        "label": "Form",
+        "required": true,
+        "mappable": false,
+        "help": "The formbase form to watch for new submissions.",
+        "options": {
+            "store": "rpc://listForms"
+        }
+    },
+    {
+        "name": "eventType",
+        "type": "select",
+        "label": "Event",
+        "required": true,
+        "mappable": false,
+        "default": "submission_created",
+        "help": "Abandoned submissions require partial-submission tracking on the formbase workspace.",
+        "options": [
+            {
+                "label": "Submission created",
+                "value": "submission_created"
+            },
+            {
+                "label": "Submission abandoned",
+                "value": "submission_abandoned",
+                "nested": [
+                    {
+                        "name": "idleWindow",
+                        "type": "select",
+                        "label": "Consider submission abandoned after",
+                        "required": true,
+                        "mappable": false,
+                        "default": "12h",
+                        "help": "The webhook fires after the submission has no saved changes for this long. The hourly sweep can add up to about one hour.",
+                        "options": [
+                            {
+                                "label": "12 hours",
+                                "value": "12h"
+                            },
+                            {
+                                "label": "1 day",
+                                "value": "1d"
+                            },
+                            {
+                                "label": "3 days",
+                                "value": "3d"
+                            },
+                            {
+                                "label": "1 week",
+                                "value": "1w"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]

@@ -1,1 +1,7 @@
-[]
+[
+    {
+        "name": "data",
+        "type": "any",
+        "label": "Data"
+    }
+]

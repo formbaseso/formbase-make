@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const VALID_INTERFACE_TYPES = new Set([
+    'any',
     'array',
     'boolean',
     'buffer',
@@ -66,7 +67,7 @@ test('all IML mirror files contain valid JSON', () => {
 
 test('base uses OAuth bearer auth, envelope errors, and sanitized logs', () => {
     const base = readJson('app/base.imljson')
-    assert.equal(base.baseUrl, 'https://api.formbase.so/api/v1')
+    assert.equal(base.baseUrl, 'https://api.formbase.so')
     assert.equal(base.headers.Authorization, 'Bearer {{connection.accessToken}}')
     assert.equal(base.response.error['401'].type, 'InvalidAccessTokenError')
     assert.equal(base.response.error['429'].type, 'RateLimitError')
@@ -87,6 +88,8 @@ test('OAuth connection implements PKCE, confidential client auth, rotation, and 
     assert.equal(communication.authorize.qs.redirect_uri, '{{oauth.localRedirectUri}}')
     assert.equal(communication.authorize.qs.code_challenge_method, 'S256')
     assert.match(communication.authorize.qs.code_challenge, /sha256\(temp\.codeVerifier/)
+    assert.match(communication.authorize.qs.code_challenge, /replace\(replace\(replace/)
+    assert.equal(communication.authorize.qs.code_challenge.includes('base64url('), false)
 
     assert.equal(communication.token.url, 'https://api.formbase.so/oauth/token')
     assert.equal(communication.token.type, 'urlencoded')
@@ -113,24 +116,39 @@ test('OAuth connection implements PKCE, confidential client auth, rotation, and 
 test('instant trigger delegates lifecycle to attached webhook', () => {
     const moduleApi = readJson('modules/watch_submissions/api.imljson')
     const moduleParameters = readJson('modules/watch_submissions/parameters.imljson')
+    const webhookParameters = readJson('webhooks/submission_webhook/parameters.imljson')
     const webhook = readJson('webhooks/submission_webhook/api.imljson')
     const attach = readJson('webhooks/submission_webhook/attach.imljson')
     const detach = readJson('webhooks/submission_webhook/detach.imljson')
 
     assert.deepEqual(moduleApi, {})
-    assert.equal(moduleParameters.find((field) => field.name === 'formId')?.options.store, 'rpc://listForms')
-    assert.equal(moduleParameters.find((field) => field.name === 'eventType')?.default, 'submission_created')
+    assert.deepEqual(moduleParameters, [])
+    assert.equal(webhookParameters.find((field) => field.name === 'formId')?.options.store, 'rpc://listForms')
+    const eventType = webhookParameters.find((field) => field.name === 'eventType')
+    assert.equal(eventType?.default, 'submission_created')
+    const abandonedOption = eventType.options.find((option) => option.value === 'submission_abandoned')
+    const idleWindow = abandonedOption.nested.find((field) => field.name === 'idleWindow')
+    assert.equal(idleWindow.required, true)
+    assert.equal(idleWindow.default, '12h')
+    assert.deepEqual(
+        idleWindow.options.map((option) => option.value),
+        ['12h', '1d', '3d', '1w']
+    )
 
     assert.equal('verification' in webhook, false)
     assert.equal(webhook.output, '{{body}}')
     assert.equal(webhook.respond.status, 200)
 
     assert.equal(attach.body.method, 'webhooks.create')
+    assert.equal(attach.url, '/api/v1')
+    assert.equal(attach.body.params.formId, '{{parameters.formId}}')
     assert.equal(attach.body.params.provider, 'make')
     assert.equal(attach.body.params.eventType, '{{parameters.eventType}}')
+    assert.equal(attach.body.params.idleWindow, '{{parameters.idleWindow}}')
     assert.equal(attach.response.data.subscriptionId, '{{body.data.subscriptionId}}')
 
     assert.equal(detach.body.method, 'webhooks.delete')
+    assert.equal(detach.url, '/api/v1')
     assert.deepEqual(detach.body.params, { subscriptionId: '{{webhook.subscriptionId}}' })
 })
 
@@ -140,6 +158,7 @@ test('form picker and sample RPC match current paginated API envelopes', () => {
     const moduleSamples = readJson('modules/watch_submissions/samples.imljson')
 
     assert.equal(listForms.body.method, 'forms.list')
+    assert.equal(listForms.url, '/api/v1')
     assert.equal(listForms.body.params.workspaceId, '{{connection.workspaceId}}')
     assert.equal(listForms.response.iterate, '{{body.data.items}}')
     assert.equal(listForms.response.output.value, '{{item.id}}')
@@ -149,7 +168,8 @@ test('form picker and sample RPC match current paginated API envelopes', () => {
 
     assert.equal(moduleSamples, 'rpc://getSampleSubmission')
     assert.equal(sample.body.method, 'submissions.sample')
-    assert.equal(sample.body.params.formId, '{{parameters.formId}}')
+    assert.equal(sample.url, '/api/v1')
+    assert.equal(sample.body.params.formId, '{{webhook.formId}}')
     assert.equal(sample.response.output, '{{body.data}}')
 })
 
@@ -169,17 +189,25 @@ test('submission fixture and interface match current webhook contract', () => {
         submissionInterface.spec.map((field) => field.name),
         ['id', 'respondentEmail', 'submittedAt', 'submissionPdfLink', 'language']
     )
+
+    const fieldsInterface = outputInterface.find((field) => field.name === 'fields')
+    const valueInterface = fieldsInterface.spec.spec.find((field) => field.name === 'value')
+    assert.equal(valueInterface.spec.find((field) => field.name === 'raw')?.type, 'any')
 })
 
 test('universal API module forwards method and JSON params through current envelope', () => {
     const metadata = readJson('modules/make_api_call/metadata.imljson')
     const api = readJson('modules/make_api_call/api.imljson')
     const expect = readJson('modules/make_api_call/expect.imljson')
+    const outputInterface = readJson('modules/make_api_call/interface.imljson')
 
     assert.equal(metadata.label, 'Make an API Call')
     assert.equal(metadata.type, 'universal')
+    assert.equal(metadata.name, 'makeApiCall')
+    assert.equal(api.url, '/api/v1')
     assert.equal(api.body.method, '{{parameters.method}}')
     assert.equal(api.body.params, '{{parameters.params}}')
-    assert.equal(api.response.output, '{{body.data}}')
+    assert.deepEqual(api.response.output, { data: '{{body.data}}' })
     assert.equal(expect.find((field) => field.name === 'params')?.type, 'json')
+    assert.equal(outputInterface.find((field) => field.name === 'data')?.type, 'any')
 })

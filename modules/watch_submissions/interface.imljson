@@ -51,6 +51,7 @@
                     "type": "collection",
                     "label": "Value",
                     "spec": [
+                        { "name": "raw", "type": "any", "label": "Raw" },
                         { "name": "display", "type": "text", "label": "Display" }
                     ]
                 }
