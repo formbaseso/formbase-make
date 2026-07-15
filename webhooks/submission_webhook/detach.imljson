@@ -1,0 +1,10 @@
+{
+    "url": "/",
+    "method": "POST",
+    "body": {
+        "method": "webhooks.delete",
+        "params": {
+            "id": "{{webhook.webhookId}}"
+        }
+    }
+}

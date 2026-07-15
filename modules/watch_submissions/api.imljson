@@ -1,0 +1,30 @@
+{
+    "attach": {
+        "url": "/",
+        "method": "POST",
+        "body": {
+            "method": "webhooks.create",
+            "params": {
+                "formId": "{{parameters.formId}}",
+                "targetUrl": "{{webhook.url}}",
+                "provider": "make",
+                "eventType": "submission_created"
+            }
+        },
+        "response": {
+            "data": {
+                "webhookId": "{{body.data.id}}"
+            }
+        }
+    },
+    "detach": {
+        "url": "/",
+        "method": "POST",
+        "body": {
+            "method": "webhooks.delete",
+            "params": {
+                "id": "{{webhook.webhookId}}"
+            }
+        }
+    }
+}

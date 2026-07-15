@@ -1,0 +1,9 @@
+[
+    {
+        "name": "apiKey",
+        "type": "password",
+        "label": "API Token",
+        "required": true,
+        "help": "Generate at User Settings → API Tokens."
+    }
+]

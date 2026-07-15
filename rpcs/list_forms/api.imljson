@@ -1,0 +1,14 @@
+{
+    "url": "/",
+    "method": "POST",
+    "body": {
+        "method": "forms.list"
+    },
+    "response": {
+        "iterate": "{{body.data}}",
+        "output": {
+            "label": "{{item.name}}",
+            "value": "{{item._id}}"
+        }
+    }
+}

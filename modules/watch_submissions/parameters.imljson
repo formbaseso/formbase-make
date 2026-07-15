@@ -1,0 +1,12 @@
+[
+    {
+        "name": "formId",
+        "type": "select",
+        "label": "Form",
+        "required": true,
+        "help": "The formbase form to watch for new submissions.",
+        "options": {
+            "store": "rpc://formbase@1/listForms"
+        }
+    }
+]

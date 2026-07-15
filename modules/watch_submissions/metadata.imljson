@@ -1,0 +1,8 @@
+{
+    "name": "watch_submissions",
+    "label": "Watch Submissions",
+    "description": "Triggers when a form receives a new submission.",
+    "type": "instant_trigger",
+    "connection": "formbase",
+    "webhook": "submission_webhook"
+}

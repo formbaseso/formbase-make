@@ -1,0 +1,10 @@
+[
+    {
+        "name": "convexSiteUrl",
+        "label": "formbase API URL",
+        "type": "url",
+        "default": "https://api.formbase.so",
+        "required": true,
+        "help": "Override only for self-hosted formbase"
+    }
+]

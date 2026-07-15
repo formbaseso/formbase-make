@@ -1,0 +1,58 @@
+[
+    {
+        "name": "eventId",
+        "type": "text",
+        "label": "Event ID"
+    },
+    {
+        "name": "eventType",
+        "type": "text",
+        "label": "Event Type"
+    },
+    {
+        "name": "eventTimestamp",
+        "type": "text",
+        "label": "Event Timestamp"
+    },
+    {
+        "name": "form",
+        "type": "collection",
+        "label": "Form",
+        "spec": [
+            { "name": "id", "type": "text", "label": "Form ID" },
+            { "name": "name", "type": "text", "label": "Form Name" }
+        ]
+    },
+    {
+        "name": "submission",
+        "type": "collection",
+        "label": "Submission",
+        "spec": [
+            { "name": "id", "type": "text", "label": "Submission ID" },
+            { "name": "respondentEmail", "type": "text", "label": "Respondent Email" },
+            { "name": "submittedAt", "type": "text", "label": "Submitted At" }
+        ]
+    },
+    {
+        "name": "fields",
+        "type": "array",
+        "label": "Fields",
+        "spec": {
+            "type": "collection",
+            "spec": [
+                { "name": "fieldId", "type": "text", "label": "Field ID" },
+                { "name": "title", "type": "text", "label": "Title" },
+                { "name": "type", "type": "text", "label": "Type" },
+                {
+                    "name": "value",
+                    "type": "collection",
+                    "label": "Value",
+                    "spec": [
+                        { "name": "raw", "type": "any", "label": "Raw" },
+                        { "name": "display", "type": "text", "label": "Display" }
+                    ]
+                }
+            ]
+        }
+    }
+]

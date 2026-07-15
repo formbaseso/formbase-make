@@ -1,0 +1,43 @@
+{
+    "eventId": "evt_01HX9G8N0F4P2K7Q3S5V8Y1Z2A",
+    "eventType": "SUBMIT_RESPONSE",
+    "eventTimestamp": "2026-04-26T14:32:18.412Z",
+    "form": {
+        "id": "form_2pmJk8Lq3RxYn4Wt5VbCdE",
+        "name": "Customer Feedback"
+    },
+    "submission": {
+        "id": "sub_9aB2cD4eF6gH8iJ0kL2mN4",
+        "respondentEmail": "jane.doe@example.com",
+        "submittedAt": "2026-04-26T14:32:18.000Z"
+    },
+    "fields": [
+        {
+            "fieldId": "fld_name",
+            "title": "Your name",
+            "type": "short_text",
+            "value": {
+                "raw": "Jane Doe",
+                "display": "Jane Doe"
+            }
+        },
+        {
+            "fieldId": "fld_rating",
+            "title": "How would you rate us?",
+            "type": "rating",
+            "value": {
+                "raw": 5,
+                "display": "5"
+            }
+        },
+        {
+            "fieldId": "fld_comments",
+            "title": "Anything else?",
+            "type": "long_text",
+            "value": {
+                "raw": "Loved the new dashboard.",
+                "display": "Loved the new dashboard."
+            }
+        }
+    ]
+}

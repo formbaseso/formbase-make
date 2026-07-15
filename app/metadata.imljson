@@ -1,0 +1,9 @@
+{
+    "name": "formbase",
+    "label": "formbase",
+    "description": "Build forms and route submissions to your stack.",
+    "version": 1,
+    "language": "en",
+    "countries": null,
+    "private": true
+}

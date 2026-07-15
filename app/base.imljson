@@ -1,0 +1,11 @@
+{
+    "baseUrl": "{{parameters.convexSiteUrl}}/api/v1",
+    "headers": {
+        "Authorization": "Bearer {{connection.apiKey}}",
+        "Content-Type": "application/json"
+    },
+    "response": {
+        "valid": { "condition": "{{body.ok}}" },
+        "error": { "message": "[{{body.error.code}}] {{body.error.message}}" }
+    }
+}

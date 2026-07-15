@@ -1,0 +1,21 @@
+{
+    "url": "/",
+    "method": "POST",
+    "headers": {
+        "Authorization": "Bearer {{parameters.apiKey}}",
+        "Content-Type": "application/json"
+    },
+    "body": {
+        "method": "me.get"
+    },
+    "response": {
+        "valid": { "condition": "{{body.ok}}" },
+        "error": {
+            "message": "[{{body.error.code}}] {{body.error.message}}"
+        },
+        "data": {
+            "userId": "{{body.data.userId}}",
+            "email": "{{body.data.email}}"
+        }
+    }
+}

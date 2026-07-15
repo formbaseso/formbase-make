@@ -1,0 +1,5 @@
+{
+    "name": "formbase",
+    "label": "formbase API Token",
+    "type": "apiKey"
+}
