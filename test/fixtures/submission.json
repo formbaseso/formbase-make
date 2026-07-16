@@ -1,6 +1,6 @@
 {
     "eventId": "evt_01HX9G8N0F4P2K7Q3S5V8Y1Z2A",
-    "eventType": "SUBMIT_RESPONSE",
+    "eventType": "ABANDON_RESPONSE",
     "eventTimestamp": "2026-04-26T14:32:18.412Z",
     "form": {
         "id": "form_2pmJk8Lq3RxYn4Wt5VbCdE",

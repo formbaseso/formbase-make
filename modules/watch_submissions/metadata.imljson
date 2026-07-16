@@ -1,7 +1,7 @@
 {
     "name": "watchSubmissions",
     "label": "Watch Submissions",
-    "description": "Triggers when a form receives a submission or an abandoned partial submission.",
+    "description": "Triggers when a form receives a submission or an abandoned partial submission. Payload eventType is SUBMIT_RESPONSE, UPDATE_RESPONSE, or ABANDON_RESPONSE.",
     "type": "instant_trigger",
     "connection": "formbase",
     "webhook": "submission_webhook"

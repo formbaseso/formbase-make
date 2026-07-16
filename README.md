@@ -12,6 +12,7 @@ Git-tracked mirror of formbase custom app configuration for [Make Developer Hub]
 - Dynamic sample payload from `submissions.sample`
 - Universal **Make an API Call** module for other formbase JSON-RPC methods
 - Current webhook fields: event, form, submission email/date/PDF/language, and answer fields
+- Webhook payload `eventType` values: `SUBMIT_RESPONSE`, `UPDATE_RESPONSE`, and `ABANDON_RESPONSE`
 
 Implementation follows current formbase [n8n](https://github.com/formbaseso/n8n-nodes-formbase) and [Zapier](https://github.com/formbaseso/formbase-zapier) integrations. Canonical API contract lives in [formbaseso/formbase](https://github.com/formbaseso/formbase/tree/main/packages/convex/src/http/external_api).
 
@@ -122,9 +123,9 @@ Create test scenario in Make:
 2. Create connection. Sign in, select workspace, approve consent. Connection label should show workspace name.
 3. Select form and `Submission created`.
 4. Click **Run once**, then submit selected form.
-5. Confirm one bundle contains `eventId`, `eventType`, `eventTimestamp`, form data, submission PDF/language, and fields. `fields[].value.raw` remains dynamically typed; `display` is stable text.
+5. Confirm one bundle contains `eventId`, `eventType`, `eventTimestamp`, form data, submission PDF/language, and fields. New submissions use `SUBMIT_RESPONSE`; updated submissions use `UPDATE_RESPONSE`. `fields[].value.raw` remains dynamically typed; `display` is stable text.
 6. Deactivate scenario. Use **Make an API Call** with method `webhooks.list` and selected `formId` to confirm subscription was removed.
-7. Reactivate with `Submission abandoned`, select an idle window, save a partial response, and leave it unchanged past that window. The backend sweeps hourly, so delivery can occur up to about one hour after the selected threshold.
+7. Reactivate with `Submission abandoned`, select an idle window, save a partial response, and leave it unchanged past that window. Confirm delivered bundle uses `ABANDON_RESPONSE`. The backend sweeps hourly, so delivery can occur up to about one hour after the selected threshold.
 8. Run error scenario with unknown API method; confirm readable `METHOD_NOT_FOUND` error.
 9. If review is planned, test form picker against workspace with more than 100 forms and retain execution logs showing pagination.
 

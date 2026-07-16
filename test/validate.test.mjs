@@ -173,12 +173,14 @@ test('form picker and sample RPC match current paginated API envelopes', () => {
     assert.equal(sample.response.output, '{{body.data}}')
 })
 
-test('submission fixture and interface match current webhook contract', () => {
+test('abandoned submission fixture and interface match current webhook contract', () => {
     const fixture = readJson('test/fixtures/submission.json')
+    const metadata = readJson('modules/watch_submissions/metadata.imljson')
     const outputInterface = readJson('modules/watch_submissions/interface.imljson')
 
     assertInterfaceFields(outputInterface)
-    assert.equal(fixture.eventType, 'SUBMIT_RESPONSE')
+    assert.equal(fixture.eventType, 'ABANDON_RESPONSE')
+    assert.match(metadata.description, /ABANDON_RESPONSE/)
     assert.equal(typeof fixture.submission.submissionPdfLink, 'string')
     assert.equal(fixture.submission.language, 'en')
     assert.ok(fixture.fields.every((field) => field.fieldId && field.key && field.value.display))
