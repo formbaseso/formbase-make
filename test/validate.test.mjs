@@ -173,28 +173,35 @@ test('form picker and sample RPC match current paginated API envelopes', () => {
     assert.equal(sample.response.output, '{{body.data}}')
 })
 
-test('abandoned submission fixture and interface match current webhook contract', () => {
+test('abandoned submission fixture and interface match the event envelope', () => {
     const fixture = readJson('test/fixtures/submission.json')
     const metadata = readJson('modules/watch_submissions/metadata.imljson')
     const outputInterface = readJson('modules/watch_submissions/interface.imljson')
 
     assertInterfaceFields(outputInterface)
-    assert.equal(fixture.eventType, 'ABANDON_RESPONSE')
-    assert.match(metadata.description, /ABANDON_RESPONSE/)
-    assert.equal(typeof fixture.submission.submissionPdfLink, 'string')
-    assert.equal(fixture.submission.language, 'en')
-    assert.ok(fixture.fields.every((field) => field.fieldId && field.key && field.value.display))
-    assert.ok(fixture.fields.some((field) => Array.isArray(field.value.raw)))
+    assert.equal(fixture.type, 'submission.abandoned')
+    assert.equal(typeof fixture.apiVersion, 'string')
+    assert.equal(typeof fixture.test, 'boolean')
+    assert.match(metadata.description, /submission\.abandoned/)
+    assert.equal(typeof fixture.data.submission.pdfUrl, 'string')
+    assert.equal(fixture.data.submission.language, 'en')
+    assert.equal('fields' in fixture, false)
+    assert.deepEqual(Object.keys(fixture.data.display), Object.keys(fixture.data.answers))
+    assert.ok(Object.values(fixture.data.answers).some((value) => Array.isArray(value)))
 
-    const submissionInterface = outputInterface.find((field) => field.name === 'submission')
+    assert.deepEqual(
+        outputInterface.map((field) => field.name),
+        ['id', 'type', 'createdAt', 'apiVersion', 'test', 'data']
+    )
+    const dataInterface = outputInterface.find((field) => field.name === 'data')
+    const submissionInterface = dataInterface.spec.find((field) => field.name === 'submission')
     assert.deepEqual(
         submissionInterface.spec.map((field) => field.name),
-        ['id', 'respondentEmail', 'submittedAt', 'submissionPdfLink', 'language']
+        ['id', 'respondentEmail', 'submittedAt', 'pdfUrl', 'language']
     )
-
-    const fieldsInterface = outputInterface.find((field) => field.name === 'fields')
-    const valueInterface = fieldsInterface.spec.spec.find((field) => field.name === 'value')
-    assert.equal(valueInterface.spec.find((field) => field.name === 'raw')?.type, 'any')
+    for (const name of ['answers', 'display']) {
+        assert.equal(dataInterface.spec.find((field) => field.name === name)?.type, 'collection')
+    }
 })
 
 test('universal API module forwards method and JSON params through current envelope', () => {

@@ -1,61 +1,81 @@
 [
     {
-        "name": "eventId",
+        "name": "id",
         "type": "text",
         "label": "Event ID"
     },
     {
-        "name": "eventType",
+        "name": "type",
         "type": "text",
         "label": "Event Type"
     },
     {
-        "name": "eventTimestamp",
+        "name": "createdAt",
         "type": "date",
         "label": "Event Timestamp"
     },
     {
-        "name": "form",
-        "type": "collection",
-        "label": "Form",
-        "spec": [
-            { "name": "id", "type": "text", "label": "Form ID" },
-            { "name": "name", "type": "text", "label": "Form Name" }
-        ]
+        "name": "apiVersion",
+        "type": "text",
+        "label": "API Version"
     },
     {
-        "name": "submission",
-        "type": "collection",
-        "label": "Submission",
-        "spec": [
-            { "name": "id", "type": "text", "label": "Submission ID" },
-            { "name": "respondentEmail", "type": "email", "label": "Respondent Email" },
-            { "name": "submittedAt", "type": "date", "label": "Submitted At" },
-            { "name": "submissionPdfLink", "type": "url", "label": "Submission PDF Link" },
-            { "name": "language", "type": "text", "label": "Submission Language" }
-        ]
+        "name": "test",
+        "type": "boolean",
+        "label": "Test Event"
     },
     {
-        "name": "fields",
-        "type": "array",
-        "label": "Fields",
-        "spec": {
-            "type": "collection",
-            "spec": [
-                { "name": "fieldId", "type": "text", "label": "Field ID" },
-                { "name": "key", "type": "text", "label": "Field Key" },
-                { "name": "title", "type": "text", "label": "Title" },
-                { "name": "type", "type": "text", "label": "Type" },
-                {
-                    "name": "value",
-                    "type": "collection",
-                    "label": "Value",
-                    "spec": [
-                        { "name": "raw", "type": "any", "label": "Raw" },
-                        { "name": "display", "type": "text", "label": "Display" }
-                    ]
-                }
-            ]
-        }
+        "name": "data",
+        "type": "collection",
+        "label": "Data",
+        "spec": [
+            {
+                "name": "form",
+                "type": "collection",
+                "label": "Form",
+                "spec": [
+                    { "name": "id", "type": "text", "label": "Form ID" },
+                    { "name": "name", "type": "text", "label": "Form Name" },
+                    { "name": "snapshotId", "type": "text", "label": "Published Version ID" }
+                ]
+            },
+            {
+                "name": "submission",
+                "type": "collection",
+                "label": "Submission",
+                "spec": [
+                    { "name": "id", "type": "text", "label": "Submission ID" },
+                    { "name": "respondentEmail", "type": "email", "label": "Respondent Email" },
+                    { "name": "submittedAt", "type": "date", "label": "Submitted At" },
+                    { "name": "pdfUrl", "type": "url", "label": "Submission PDF Link" },
+                    { "name": "language", "type": "text", "label": "Submission Language" }
+                ]
+            },
+            {
+                "name": "answers",
+                "type": "collection",
+                "label": "Answers",
+                "help": "Every answer keyed by field key. A repeating group is an array of rows keyed by member field key. Keys are listed by fields.list.",
+                "spec": []
+            },
+            {
+                "name": "display",
+                "type": "collection",
+                "label": "Answers (display)",
+                "help": "Human-readable text for every answer, under the same keys as Answers.",
+                "spec": []
+            },
+            {
+                "name": "request",
+                "type": "collection",
+                "label": "Request",
+                "help": "Present only when the submission answered a request.",
+                "spec": [
+                    { "name": "id", "type": "text", "label": "Request ID" },
+                    { "name": "externalId", "type": "text", "label": "External ID" },
+                    { "name": "metadata", "type": "any", "label": "Metadata" }
+                ]
+            }
+        ]
     }
 ]
