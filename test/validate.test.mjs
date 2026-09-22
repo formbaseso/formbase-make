@@ -28,6 +28,15 @@ function readJson(relativePath) {
     return JSON.parse(fs.readFileSync(path.join(ROOT, relativePath), 'utf8'))
 }
 
+/**
+ * Loads an IML function the way Make does: the file is a bare function
+ * declaration pasted into the Hub's Functions editor, not a module.
+ */
+function loadImlFunction(relativePath, name) {
+    const source = fs.readFileSync(path.join(ROOT, relativePath), 'utf8')
+    return new Function(`${source}\nreturn ${name}`)()
+}
+
 function walkFiles(directory) {
     return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
         const absolutePath = path.join(directory, entry.name)
@@ -177,8 +186,11 @@ test('abandoned submission fixture and interface match the event envelope', () =
     const fixture = readJson('test/fixtures/submission.json')
     const metadata = readJson('modules/watch_submissions/metadata.imljson')
     const outputInterface = readJson('modules/watch_submissions/interface.imljson')
+    const buildSubmissionInterface = loadImlFunction('functions/buildSubmissionInterface.js', 'buildSubmissionInterface')
 
-    assertInterfaceFields(outputInterface)
+    assert.equal(outputInterface, 'rpc://getSubmissionInterface')
+    const envelopeOnly = buildSubmissionInterface([])
+    assertInterfaceFields(envelopeOnly)
     assert.equal(fixture.type, 'submission.abandoned')
     assert.equal(typeof fixture.apiVersion, 'string')
     assert.equal(typeof fixture.test, 'boolean')
@@ -190,10 +202,10 @@ test('abandoned submission fixture and interface match the event envelope', () =
     assert.ok(Object.values(fixture.data.answers).some((value) => Array.isArray(value)))
 
     assert.deepEqual(
-        outputInterface.map((field) => field.name),
+        envelopeOnly.map((field) => field.name),
         ['id', 'type', 'createdAt', 'apiVersion', 'test', 'data']
     )
-    const dataInterface = outputInterface.find((field) => field.name === 'data')
+    const dataInterface = envelopeOnly.find((field) => field.name === 'data')
     const submissionInterface = dataInterface.spec.find((field) => field.name === 'submission')
     assert.deepEqual(
         submissionInterface.spec.map((field) => field.name),
@@ -201,7 +213,68 @@ test('abandoned submission fixture and interface match the event envelope', () =
     )
     for (const name of ['answers', 'display']) {
         assert.equal(dataInterface.spec.find((field) => field.name === name)?.type, 'collection')
+        assert.deepEqual(dataInterface.spec.find((field) => field.name === name).spec, [])
     }
+})
+
+test('dynamic interface RPC builds answer fields from the published field list', () => {
+    const rpcApi = readJson('rpcs/get_submission_interface/api.imljson')
+    const rpcMetadata = readJson('rpcs/get_submission_interface/metadata.imljson')
+    const buildSubmissionInterface = loadImlFunction('functions/buildSubmissionInterface.js', 'buildSubmissionInterface')
+
+    assert.equal(rpcMetadata.name, 'getSubmissionInterface')
+    assert.equal(rpcMetadata.connection, 'formbase')
+    assert.equal(rpcApi.url, '/api/v1')
+    assert.equal(rpcApi.body.method, 'fields.list')
+    assert.equal(rpcApi.body.params.formId, '{{webhook.formId}}')
+    assert.equal(rpcApi.response.output, '{{buildSubmissionInterface(body.data.items)}}')
+
+    // The shape fields.list returns: plain fields, then one repeating group.
+    const built = buildSubmissionInterface([
+        { key: 'your_name', type: 'text', title: 'Your name', required: true, prefillable: true },
+        { key: 'rating', type: 'rating', title: 'How likely are you to recommend us?', required: false, prefillable: true },
+        { key: 'signed_on', type: 'date', title: 'Signed on', required: false, prefillable: true },
+        { key: 'account_id', type: 'hidden', title: 'Account ID', required: false, prefillable: false, context: true },
+        {
+            key: 'attendees',
+            type: 'group',
+            repeating: true,
+            members: [{ key: 'attendee_name', type: 'text', title: 'Attendee name', required: true, prefillable: true }]
+        }
+    ])
+
+    assertInterfaceFields(built)
+    const data = built.find((field) => field.name === 'data')
+    const answers = data.spec.find((field) => field.name === 'answers')
+    const display = data.spec.find((field) => field.name === 'display')
+
+    const answerKeys = answers.spec.map((field) => field.name)
+    assert.deepEqual(answerKeys, ['your_name', 'rating', 'signed_on', 'account_id', 'attendees'])
+    assert.deepEqual(display.spec.map((field) => field.name), answerKeys)
+
+    assert.equal(answers.spec.find((field) => field.name === 'your_name').type, 'text')
+    assert.equal(answers.spec.find((field) => field.name === 'your_name').label, 'Your name')
+    assert.equal(answers.spec.find((field) => field.name === 'rating').type, 'number')
+    assert.equal(answers.spec.find((field) => field.name === 'signed_on').type, 'date')
+    assert.equal(answers.spec.find((field) => field.name === 'account_id').type, 'text')
+
+    const group = answers.spec.find((field) => field.name === 'attendees')
+    assert.equal(group.type, 'array')
+    assert.equal(group.spec.type, 'collection')
+    assert.deepEqual(group.spec.spec.map((field) => field.name), ['attendee_name'])
+    assert.equal(display.spec.find((field) => field.name === 'attendees').type, 'text')
+
+    // Every key the fixture carries is mappable, under both collections.
+    const fixture = readJson('test/fixtures/submission.json')
+    const fixtureInterface = buildSubmissionInterface([
+        { key: 'your_name', type: 'text', title: 'Your name' },
+        { key: 'rating', type: 'rating', title: 'Rating' },
+        { key: 'attendees', type: 'group', repeating: true, members: [{ key: 'attendee_name', type: 'text', title: 'Attendee name' }] }
+    ])
+    const fixtureAnswers = fixtureInterface
+        .find((field) => field.name === 'data')
+        .spec.find((field) => field.name === 'answers')
+    assert.deepEqual(fixtureAnswers.spec.map((field) => field.name), Object.keys(fixture.data.answers))
 })
 
 test('universal API module forwards method and JSON params through current envelope', () => {

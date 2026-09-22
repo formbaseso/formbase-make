@@ -10,6 +10,7 @@ Git-tracked mirror of formbase custom app configuration for [Make Developer Hub]
 - Attached dedicated webhook with automatic subscribe/unsubscribe
 - `submission_created` and `submission_abandoned` events, with required 12-hour, 1-day, 3-day, or 1-week idle windows for abandoned submissions
 - Dynamic sample payload from `submissions.sample`
+- Dynamic output interface from `fields.list`, so every answer is mappable under its own field key
 - Universal **Make an API Call** module for other formbase JSON-RPC methods
 - Every event is the formbase envelope `{ id, type, createdAt, apiVersion, test, data }`: `data.answers` holds each answer once under its field key, `data.display` the readable text under the same key, `data.submission` the email/date/PDF/language
 - Event `type` values: `submission.completed`, `submission.updated`, and `submission.abandoned`
@@ -22,11 +23,13 @@ Implementation follows current formbase [n8n](https://github.com/formbaseso/n8n-
 formbase-make/
 ├── app/                         # Base and app settings
 ├── connections/formbase/        # OAuth connection, common data, scopes
+├── functions/                   # Custom IML functions
 ├── modules/watch_submissions/   # Instant trigger
 ├── modules/make_api_call/        # Universal JSON-RPC module
 ├── webhooks/submission_webhook/ # Attached dedicated webhook
 ├── rpcs/list_forms/             # Paginated form options
 ├── rpcs/get_sample_submission/  # Dynamic trigger sample
+├── rpcs/get_submission_interface/ # Dynamic trigger interface
 └── test/                         # Semantic contract tests
 ```
 
@@ -38,7 +41,7 @@ npm ci
 npm test
 ```
 
-Tests validate JSON syntax plus OAuth, PKCE, refresh rotation, sanitization, API envelopes, pagination, webhook lifecycle, output interface, dynamic sample, and universal-module contracts. They do not execute Make's hosted IML runtime; complete live smoke test after importing definitions.
+Tests validate JSON syntax plus OAuth, PKCE, refresh rotation, sanitization, API envelopes, pagination, webhook lifecycle, output interface (including the interface the IML function builds from a field list), dynamic sample, and universal-module contracts. They do not execute Make's hosted IML runtime; complete live smoke test after importing definitions.
 
 ## 1. Deploy formbase OAuth support
 
@@ -77,11 +80,13 @@ Re-running updates redirect URIs and secret hash, returning `created: false`. Ke
 Create private app named `formbase`, then create components in this order:
 
 1. OAuth 2.0 connection `formbase`
-2. RPC `listForms`
-3. RPC `getSampleSubmission`
-4. attached dedicated web webhook `submission_webhook`
-5. instant trigger `watchSubmissions`
-6. universal module `makeApiCall`
+2. IML function `buildSubmissionInterface`
+3. RPC `listForms`
+4. RPC `getSampleSubmission`
+5. RPC `getSubmissionInterface`
+6. attached dedicated web webhook `submission_webhook`
+7. instant trigger `watchSubmissions`
+8. universal module `makeApiCall`
 
 Paste each file into corresponding Hub editor:
 
@@ -93,8 +98,10 @@ Paste each file into corresponding Hub editor:
 | `connections/formbase/scope.imljson` | Connection → Default scope |
 | `connections/formbase/parameters.imljson` | Connection → Parameters |
 | `connections/formbase/communication.imljson` | Connection → Communication |
+| `functions/buildSubmissionInterface.js` | App → Functions (IML) |
 | `rpcs/list_forms/api.imljson` | `listForms` → Communication |
 | `rpcs/get_sample_submission/api.imljson` | `getSampleSubmission` → Communication |
+| `rpcs/get_submission_interface/api.imljson` | `getSubmissionInterface` → Communication |
 | `webhooks/submission_webhook/parameters.imljson` | Webhook → Parameters |
 | `webhooks/submission_webhook/attach.imljson` | Webhook → Attach |
 | `webhooks/submission_webhook/detach.imljson` | Webhook → Detach |
@@ -122,12 +129,13 @@ Create test scenario in Make:
 1. Add **formbase → Watch Submissions**.
 2. Create connection. Sign in, select workspace, approve consent. Connection label should show workspace name.
 3. Select form and `Submission created`.
-4. Click **Run once**, then submit selected form.
-5. Confirm one bundle contains `id`, `type`, `createdAt`, `data.form`, `data.submission` (PDF/language), `data.answers` and `data.display`. New submissions use `submission.completed`; updated submissions use `submission.updated`. `data.answers` values keep their stored type; `data.display` is stable text under the same keys.
-6. Deactivate scenario. Use **Make an API Call** with method `webhooks.list` and selected `formId` to confirm subscription was removed.
-7. Reactivate with `Submission abandoned`, select an idle window, save a partial response, and leave it unchanged past that window. Confirm delivered bundle uses `submission.abandoned`. The backend sweeps hourly, so delivery can occur up to about one hour after the selected threshold.
-8. Run error scenario with unknown API method; confirm readable `METHOD_NOT_FOUND` error.
-9. If review is planned, test form picker against workspace with more than 100 forms and retain execution logs showing pagination.
+4. Open the module's output mapping panel and confirm every question of the selected form is listed under **Answers** and **Answers (display)** by its field key. The list comes from `getSubmissionInterface`; a form that is not published has no field list, so publish it first.
+5. Click **Run once**, then submit selected form.
+6. Confirm one bundle contains `id`, `type`, `createdAt`, `data.form`, `data.submission` (PDF/language), `data.answers` and `data.display`. New submissions use `submission.completed`; updated submissions use `submission.updated`. `data.answers` values keep their stored type; `data.display` is stable text under the same keys.
+7. Deactivate scenario. Use **Make an API Call** with method `webhooks.list` and selected `formId` to confirm subscription was removed.
+8. Reactivate with `Submission abandoned`, select an idle window, save a partial response, and leave it unchanged past that window. Confirm delivered bundle uses `submission.abandoned`. The backend sweeps hourly, so delivery can occur up to about one hour after the selected threshold.
+9. Run error scenario with unknown API method; confirm readable `METHOD_NOT_FOUND` error.
+10. If review is planned, test form picker against workspace with more than 100 forms and retain execution logs showing pagination.
 
 ## 4. Publish
 

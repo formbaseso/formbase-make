@@ -1,0 +1,13 @@
+{
+    "url": "/api/v1",
+    "method": "POST",
+    "body": {
+        "method": "fields.list",
+        "params": {
+            "formId": "{{webhook.formId}}"
+        }
+    },
+    "response": {
+        "output": "{{buildSubmissionInterface(body.data.items)}}"
+    }
+}

@@ -1,0 +1,5 @@
+{
+    "name": "getSubmissionInterface",
+    "label": "Get Submission Interface",
+    "connection": "formbase"
+}
