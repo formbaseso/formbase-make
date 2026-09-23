@@ -17,11 +17,15 @@
         "required": true,
         "mappable": false,
         "default": "submission_created",
-        "help": "Submission created fires for a new submission and again when the respondent updates it later (event type submission.updated). Submission abandoned needs partial-submission tracking on the workspace.",
+        "help": "Submission created fires once for each new submission (event type submission.completed). Submission updated fires when the respondent edits a submission they already sent (submission.updated); the form must allow editing after submit. Submission abandoned needs partial-submission tracking on the workspace.",
         "options": [
             {
                 "label": "Submission created",
                 "value": "submission_created"
+            },
+            {
+                "label": "Submission updated",
+                "value": "submission_updated"
             },
             {
                 "label": "Submission abandoned",

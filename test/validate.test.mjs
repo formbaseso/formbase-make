@@ -187,6 +187,21 @@ test('instant trigger delegates lifecycle to attached webhook', () => {
     assert.equal(webhookParameters.find((field) => field.name === 'formId')?.options.store, 'rpc://listForms')
     const eventType = webhookParameters.find((field) => field.name === 'eventType')
     assert.equal(eventType?.default, 'submission_created')
+    // One subscription event per trigger: created receives submission.completed only, updated
+    // receives submission.updated only, abandoned receives submission.abandoned.
+    assert.deepEqual(
+        eventType.options.map((option) => option.value),
+        ['submission_created', 'submission_updated', 'submission_abandoned']
+    )
+    const updatedOption = eventType.options.find((option) => option.value === 'submission_updated')
+    assert.equal(updatedOption.label, 'Submission updated')
+    // Only an abandoned subscription takes an idle window.
+    assert.deepEqual(
+        eventType.options.filter((option) => 'nested' in option).map((option) => option.value),
+        ['submission_abandoned']
+    )
+    assert.match(eventType.help, /Submission updated fires when the respondent edits a submission they already sent/)
+    assert.doesNotMatch(eventType.help, /again when/)
     const abandonedOption = eventType.options.find((option) => option.value === 'submission_abandoned')
     const idleWindow = abandonedOption.nested.find((field) => field.name === 'idleWindow')
     assert.equal(idleWindow.required, true)
@@ -263,6 +278,8 @@ test('abandoned submission fixture and interface match the event envelope', () =
     assert.equal(typeof fixture.apiVersion, 'string')
     assert.equal(typeof fixture.test, 'boolean')
     assert.match(metadata.description, /submission\.abandoned/)
+    assert.match(metadata.description, /Submission created \(submission\.completed\)/)
+    assert.match(metadata.description, /Submission updated when the respondent edits/)
     assert.equal(typeof fixture.data.submission.pdfUrl, 'string')
     assert.equal(fixture.data.submission.language, 'en')
     assert.equal('fields' in fixture, false)

@@ -14,7 +14,7 @@ Sign in with your formbase account (OAuth 2.0). One connection covers one worksp
 - **Cancel a Request**: withdraws a pending request with an optional reason.
 - **Remind a Request**: emails the recipient a reminder now.
 - **Search Requests**: lists a form's requests by status or external ID.
-- **Watch Public Link Submissions** (instant trigger): fires when a respondent submits the form through its public link, updates that submission later, or abandons it. Answers arrive under `data.answers` keyed by field key and readable text under `data.display`. A completed request fires Watch Requests instead (one channel, one event).
+- **Watch Public Link Submissions** (instant trigger): fires on the event you pick for submissions through the form's public link: Submission created, Submission updated (the respondent edits a submission they already sent) or Submission abandoned. Answers arrive under `data.answers` keyed by field key and readable text under `data.display`. A completed request fires Watch Requests instead (one channel, one event).
 - **Make an API Call**: calls any formbase API method with a JSON parameters object. See https://docs.formbase.so/developers/rest-api.
 
 Deliveries to Make are not signed: a Make custom-app webhook never sees the raw request body, so the `X-formbase-Signature` header cannot be verified. The unguessable `hook.make.com` URL over HTTPS protects them.
