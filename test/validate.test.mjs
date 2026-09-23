@@ -153,7 +153,8 @@ test('instant trigger delegates lifecycle to attached webhook', () => {
     assert.equal(attach.body.params.formId, '{{parameters.formId}}')
     assert.equal(attach.body.params.provider, 'make')
     assert.equal(attach.body.params.eventType, '{{parameters.eventType}}')
-    assert.equal(attach.body.params.idleWindow, '{{parameters.idleWindow}}')
+    // A created subscription must not send idleWindow at all; `undefined` makes Make omit the key.
+    assert.equal(attach.body.params.idleWindow, '{{ifempty(parameters.idleWindow, undefined)}}')
     assert.equal(attach.response.data.subscriptionId, '{{body.data.subscriptionId}}')
 
     assert.equal(detach.body.method, 'webhooks.delete')
@@ -234,7 +235,19 @@ test('dynamic interface RPC builds answer fields from the published field list',
         { key: 'your_name', type: 'text', title: 'Your name', required: true, prefillable: true },
         { key: 'rating', type: 'rating', title: 'How likely are you to recommend us?', required: false, prefillable: true },
         { key: 'signed_on', type: 'date', title: 'Signed on', required: false, prefillable: true },
+        { key: 'plan', type: 'select', title: 'Plan', required: false, prefillable: true, options: [{ key: 'pro', label: 'Pro' }] },
+        { key: 'topics', type: 'checkbox', title: 'Topics', required: false, prefillable: true, options: [{ key: 'billing', label: 'Billing' }] },
+        {
+            key: 'satisfaction',
+            type: 'matrix',
+            title: 'How did we do?',
+            required: false,
+            prefillable: true,
+            rows: [{ key: 'delivery_speed', label: 'Delivery speed' }, { key: 'support', label: 'Support' }],
+            columns: [{ key: 'very_good', label: 'Very good' }, { key: 'poor', label: 'Poor' }]
+        },
         { key: 'account_id', type: 'hidden', title: 'Account ID', required: false, prefillable: false, context: true },
+        { key: 'total', type: 'number', title: 'Total', required: false, prefillable: false, calculated: true },
         {
             key: 'attendees',
             type: 'group',
@@ -247,16 +260,31 @@ test('dynamic interface RPC builds answer fields from the published field list',
     const data = built.find((field) => field.name === 'data')
     const answers = data.spec.find((field) => field.name === 'answers')
     const display = data.spec.find((field) => field.name === 'display')
+    const answer = (name) => answers.spec.find((field) => field.name === name)
 
     const answerKeys = answers.spec.map((field) => field.name)
-    assert.deepEqual(answerKeys, ['your_name', 'rating', 'signed_on', 'account_id', 'attendees'])
+    assert.deepEqual(answerKeys, ['your_name', 'rating', 'signed_on', 'plan', 'topics', 'satisfaction', 'account_id', 'total', 'attendees'])
     assert.deepEqual(display.spec.map((field) => field.name), answerKeys)
+    assert.equal(display.spec.find((field) => field.name === 'plan').label, 'Plan (display)')
 
-    assert.equal(answers.spec.find((field) => field.name === 'your_name').type, 'text')
-    assert.equal(answers.spec.find((field) => field.name === 'your_name').label, 'Your name')
-    assert.equal(answers.spec.find((field) => field.name === 'rating').type, 'number')
-    assert.equal(answers.spec.find((field) => field.name === 'signed_on').type, 'date')
-    assert.equal(answers.spec.find((field) => field.name === 'account_id').type, 'text')
+    assert.deepEqual(answer('your_name'), { name: 'your_name', type: 'text', label: 'Your name' })
+    assert.equal(answer('rating').type, 'number')
+    assert.equal(answer('signed_on').type, 'date')
+    // A choice answer is the option key; a multi-choice answer is a list of them.
+    assert.equal(answer('plan').type, 'text')
+    assert.deepEqual(answer('topics'), { name: 'topics', type: 'array', label: 'Topics', spec: { type: 'text' } })
+    // A matrix answer is `{ row_key: column_key }`, so each row is mappable on its own.
+    assert.deepEqual(answer('satisfaction'), {
+        name: 'satisfaction',
+        type: 'collection',
+        label: 'How did we do?',
+        spec: [
+            { name: 'delivery_speed', type: 'text', label: 'Delivery speed' },
+            { name: 'support', type: 'text', label: 'Support' }
+        ]
+    })
+    assert.equal(answer('account_id').type, 'text')
+    assert.equal(answer('total').type, 'number')
 
     const group = answers.spec.find((field) => field.name === 'attendees')
     assert.equal(group.type, 'array')

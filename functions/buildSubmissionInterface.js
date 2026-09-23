@@ -8,13 +8,14 @@
  * question title a person recognises.
  *
  * Called from `rpcs/get_submission_interface/api.imljson` as
- * `{{buildSubmissionInterface(body.data.items)}}`. With no items (a form whose
- * field list is empty) it returns the envelope alone, so the module stays
+ * `{{buildSubmissionInterface(body.data.items)}}`. With no items (a form that
+ * is not published yet) it returns the envelope alone, so the module stays
  * mappable.
  */
 function buildSubmissionInterface(items) {
-    // formbase question input type -> Make interface type. Anything unlisted
-    // stays `any`: the stored value keeps its own JSON shape in data.answers.
+    // formbase question type -> Make interface type for a single-valued
+    // answer. Anything unlisted stays `any`: the stored value keeps its own
+    // JSON shape in data.answers.
     var TYPE_BY_INPUT_TYPE = {
         text: 'text',
         textarea: 'text',
@@ -32,6 +33,28 @@ function buildSubmissionInterface(items) {
         signature: 'text',
         hidden: 'text'
     }
+    // Choice questions whose answer is a list of option keys.
+    var MULTI_OPTION_TYPES = { checkbox: true, 'picture-choice': true, ranking: true }
+
+    function label(field) {
+        return field.title || field.key
+    }
+
+    // The interface entry for one field's stored value.
+    function answerField(field) {
+        if (MULTI_OPTION_TYPES[field.type]) {
+            return { name: field.key, type: 'array', label: label(field), spec: { type: 'text' } }
+        }
+        if (field.type === 'matrix' && Array.isArray(field.rows)) {
+            // A matrix answer is `{ row_key: column_key }`.
+            var rowSpec = []
+            for (var r = 0; r < field.rows.length; r++) {
+                rowSpec.push({ name: field.rows[r].key, type: 'text', label: field.rows[r].label || field.rows[r].key })
+            }
+            return { name: field.key, type: 'collection', label: label(field), spec: rowSpec }
+        }
+        return { name: field.key, type: TYPE_BY_INPUT_TYPE[field.type] || 'any', label: label(field) }
+    }
 
     var list = Array.isArray(items) ? items : []
     var answerSpec = []
@@ -41,34 +64,22 @@ function buildSubmissionInterface(items) {
         var item = list[index]
         if (!item || typeof item.key !== 'string') continue
 
-        // A repeating group is an array of rows, each row keyed by member field key.
+        // A repeating group is an array of rows, each row keyed by member field
+        // key. The group has no title of its own, so its key labels it.
         if (Array.isArray(item.members)) {
             var memberSpec = []
             for (var m = 0; m < item.members.length; m++) {
                 var member = item.members[m]
                 if (!member || typeof member.key !== 'string') continue
-                memberSpec.push({
-                    name: member.key,
-                    type: TYPE_BY_INPUT_TYPE[member.type] || 'any',
-                    label: member.title || member.key
-                })
+                memberSpec.push(answerField(member))
             }
-            answerSpec.push({
-                name: item.key,
-                type: 'array',
-                label: item.key,
-                spec: { type: 'collection', spec: memberSpec }
-            })
+            answerSpec.push({ name: item.key, type: 'array', label: item.key, spec: { type: 'collection', spec: memberSpec } })
             displaySpec.push({ name: item.key, type: 'text', label: item.key + ' (display)' })
             continue
         }
 
-        answerSpec.push({
-            name: item.key,
-            type: TYPE_BY_INPUT_TYPE[item.type] || 'any',
-            label: item.title || item.key
-        })
-        displaySpec.push({ name: item.key, type: 'text', label: (item.title || item.key) + ' (display)' })
+        answerSpec.push(answerField(item))
+        displaySpec.push({ name: item.key, type: 'text', label: label(item) + ' (display)' })
     }
 
     return [
@@ -108,7 +119,7 @@ function buildSubmissionInterface(items) {
                     name: 'answers',
                     type: 'collection',
                     label: 'Answers',
-                    help: 'Every answer keyed by field key. A repeating group is an array of rows keyed by member field key.',
+                    help: 'Every answer keyed by field key. A choice answer is the option key; a repeating group is an array of rows keyed by member field key.',
                     spec: answerSpec
                 },
                 {

@@ -10,7 +10,7 @@ Git-tracked mirror of formbase custom app configuration for [Make Developer Hub]
 - Attached dedicated webhook with automatic subscribe/unsubscribe
 - `submission_created` and `submission_abandoned` events, with required 12-hour, 1-day, 3-day, or 1-week idle windows for abandoned submissions
 - Dynamic sample payload from `submissions.sample`
-- Dynamic output interface from `fields.list`, so every answer is mappable under its own field key
+- Dynamic output interface from `fields.list`, so every answer is mappable under its own field key: a choice answer as its option key, a multi-choice answer as a list of keys, a matrix as one item per row, a repeating group as an array of rows
 - Universal **Make an API Call** module for other formbase JSON-RPC methods
 - Every event is the formbase envelope `{ id, type, createdAt, apiVersion, test, data }`: `data.answers` holds each answer once under its field key, `data.display` the readable text under the same key, `data.submission` the email/date/PDF/language
 - Event `type` values: `submission.completed`, `submission.updated`, and `submission.abandoned`
@@ -128,8 +128,8 @@ Create test scenario in Make:
 
 1. Add **formbase → Watch Submissions**.
 2. Create connection. Sign in, select workspace, approve consent. Connection label should show workspace name.
-3. Select form and `Submission created`.
-4. Open the module's output mapping panel and confirm every question of the selected form is listed under **Answers** and **Answers (display)** by its field key. The list comes from `getSubmissionInterface`; a form that is not published has no field list, so publish it first.
+3. Select form and `Submission created`. Use **Make an API Call** with `webhooks.list` to confirm the registered subscription carries no `idleWindow` (the attach body sends it only for abandoned submissions).
+4. Open the module's output mapping panel and confirm every question of the selected form is listed under **Answers** and **Answers (display)** by its field key. The list comes from `getSubmissionInterface`; a form that is not published has no field list yet (`fields.list` answers `published: false`), so the module shows the envelope alone until the form is published.
 5. Click **Run once**, then submit selected form.
 6. Confirm one bundle contains `id`, `type`, `createdAt`, `data.form`, `data.submission` (PDF/language), `data.answers` and `data.display`. New submissions use `submission.completed`; updated submissions use `submission.updated`. `data.answers` values keep their stored type; `data.display` is stable text under the same keys.
 7. Deactivate scenario. Use **Make an API Call** with method `webhooks.list` and selected `formId` to confirm subscription was removed.
