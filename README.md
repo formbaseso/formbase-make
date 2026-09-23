@@ -99,7 +99,8 @@ Paste each file into corresponding Hub editor:
 | `connections/formbase/scope.imljson` | Connection → Default scope |
 | `connections/formbase/parameters.imljson` | Connection → Parameters |
 | `connections/formbase/communication.imljson` | Connection → Communication |
-| `functions/buildSubmissionInterface.js` | App → Functions (IML) |
+| `app/readme.md` | App → Readme |
+| `functions/buildSubmissionInterface.js` | App → Functions (IML), see note below |
 | `rpcs/list_forms/api.imljson` | `listForms` → Communication |
 | `rpcs/get_sample_submission/api.imljson` | `getSampleSubmission` → Communication |
 | `rpcs/get_submission_interface/api.imljson` | `getSubmissionInterface` → Communication |
@@ -109,13 +110,15 @@ Paste each file into corresponding Hub editor:
 | `webhooks/submission_webhook/api.imljson` | Webhook → Communication |
 | `modules/watch_submissions/parameters.imljson` | Instant trigger → Static parameters |
 | `modules/watch_submissions/api.imljson` | Instant trigger → Communication |
-| `modules/watch_submissions/interface.imljson` | Instant trigger → Interface |
+| `modules/watch_submissions/interface.imljson` | Instant trigger → Interface (`interface.static.imljson` until IML functions are enabled) |
 | `modules/watch_submissions/samples.imljson` | Instant trigger → Samples |
 | `modules/make_api_call/parameters.imljson` | Universal module → Static parameters |
 | `modules/make_api_call/expect.imljson` | Universal module → Mappable parameters |
 | `modules/make_api_call/api.imljson` | Universal module → Communication |
 | `modules/make_api_call/interface.imljson` | Universal module → Interface |
 | `modules/make_api_call/samples.imljson` | Universal module → Samples |
+
+Custom IML functions are disabled for a new Make app: the Developer Hub has no Functions tab and the `+` menu offers no "Create Function". Make enables them per app through a helpdesk ticket (https://www.make.com/en/ticket). Until then skip steps 2 and 5, and paste `modules/watch_submissions/interface.static.imljson` into Instant trigger → Interface. It is the envelope `buildSubmissionInterface` returns for an unpublished form, with `data.answers` and `data.display` typed `any`, so answers still map by typing `{{1.data.answers.<field key>}}`. Once functions are enabled, add `buildSubmissionInterface`, create the `getSubmissionInterface` RPC, and switch the interface back to `interface.imljson`.
 
 General settings come from each `metadata.imljson`. Set component connection/webhook links exactly as declared there.
 

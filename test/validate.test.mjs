@@ -184,6 +184,20 @@ test('form picker and sample RPC match current paginated API envelopes', () => {
     assert.equal(sample.response.output, '{{body.data}}')
 })
 
+test('static interface fallback is the envelope with untyped answers', () => {
+    const staticInterface = readJson('modules/watch_submissions/interface.static.imljson')
+    const buildSubmissionInterface = loadImlFunction('functions/buildSubmissionInterface.js', 'buildSubmissionInterface')
+
+    const expected = buildSubmissionInterface([])
+    const data = expected.find((field) => field.name === 'data')
+    for (const name of ['answers', 'display']) {
+        const index = data.spec.findIndex((field) => field.name === name)
+        const field = data.spec[index]
+        data.spec[index] = { name: field.name, type: 'any', label: field.label, help: field.help }
+    }
+    assert.deepEqual(staticInterface, expected)
+})
+
 test('abandoned submission fixture and interface match the event envelope', () => {
     const fixture = readJson('test/fixtures/submission.json')
     const metadata = readJson('modules/watch_submissions/metadata.imljson')
