@@ -30,7 +30,7 @@ formbase-make/
 ├── app/                         # Base and app settings
 ├── connections/formbase/        # OAuth connection, common data, scopes
 ├── functions/                   # Custom IML functions (interfaces and inputs built from fields.list)
-├── modules/watch_submissions/   # Instant trigger: submissions
+├── modules/watch_public_link_submissions/   # Instant trigger: public-link submissions
 ├── modules/watch_requests/      # Instant trigger: requests completed, expired, canceled
 ├── modules/create_request/      # Action: requests.create
 ├── modules/get_request/         # Action: requests.get
@@ -107,7 +107,7 @@ Create private app named `formbase`, then create components in this order:
 9. RPC `getRequestFields`
 10. attached dedicated web webhook `submission_webhook`
 11. attached dedicated web webhook `request_webhook`
-12. instant trigger `watchSubmissions`
+12. instant trigger `watchPublicLinkSubmissions`
 13. instant trigger `watchRequests`
 14. action `createRequest` (create), `getRequest` (read), `cancelRequest` (update), `remindRequest` (update)
 15. search `searchRequests`
@@ -140,10 +140,10 @@ Paste each file into corresponding Hub editor:
 | `webhooks/request_webhook/attach.imljson` | Request webhook → Attach |
 | `webhooks/request_webhook/detach.imljson` | Request webhook → Detach |
 | `webhooks/request_webhook/api.imljson` | Request webhook → Communication |
-| `modules/watch_submissions/parameters.imljson` | Watch Public Link Submissions → Static parameters |
-| `modules/watch_submissions/api.imljson` | Watch Public Link Submissions → Communication |
-| `modules/watch_submissions/interface.imljson` | Watch Public Link Submissions → Interface (`interface.static.imljson` until IML functions are enabled) |
-| `modules/watch_submissions/samples.imljson` | Watch Public Link Submissions → Samples |
+| `modules/watch_public_link_submissions/parameters.imljson` | Watch Public Link Submissions → Static parameters |
+| `modules/watch_public_link_submissions/api.imljson` | Watch Public Link Submissions → Communication |
+| `modules/watch_public_link_submissions/interface.imljson` | Watch Public Link Submissions → Interface (`interface.static.imljson` until IML functions are enabled) |
+| `modules/watch_public_link_submissions/samples.imljson` | Watch Public Link Submissions → Samples |
 | `modules/watch_requests/parameters.imljson` | Watch Requests → Static parameters |
 | `modules/watch_requests/api.imljson` | Watch Requests → Communication |
 | `modules/watch_requests/interface.imljson` | Watch Requests → Interface (`interface.static.imljson` until IML functions are enabled) |
@@ -169,7 +169,7 @@ Paste each file into corresponding Hub editor:
 
 Custom IML functions are disabled for a new Make app: the Developer Hub has no Functions tab and the `+` menu offers no "Create Function". Make enables them per app through a helpdesk ticket (https://www.make.com/en/ticket; tracked as formbaseso/formbase#207). Until then skip steps 2, 5, 7, 8 and 9 and paste the static twins instead:
 
-- `modules/watch_submissions/interface.static.imljson` into Watch Public Link Submissions → Interface
+- `modules/watch_public_link_submissions/interface.static.imljson` into Watch Public Link Submissions → Interface
 - `modules/watch_requests/interface.static.imljson` into Watch Requests → Interface
 - `modules/get_request/interface.static.imljson` into Get a Request → Interface
 - `modules/create_request/expect.static.imljson` into Create a Request → Mappable parameters

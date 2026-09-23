@@ -175,8 +175,8 @@ test('OAuth connection implements PKCE, confidential client auth, rotation, and 
 })
 
 test('instant trigger delegates lifecycle to attached webhook', () => {
-    const moduleApi = readJson('modules/watch_submissions/api.imljson')
-    const moduleParameters = readJson('modules/watch_submissions/parameters.imljson')
+    const moduleApi = readJson('modules/watch_public_link_submissions/api.imljson')
+    const moduleParameters = readJson('modules/watch_public_link_submissions/parameters.imljson')
     const webhookParameters = readJson('webhooks/submission_webhook/parameters.imljson')
     const webhook = readJson('webhooks/submission_webhook/api.imljson')
     const attach = readJson('webhooks/submission_webhook/attach.imljson')
@@ -218,7 +218,7 @@ test('instant trigger delegates lifecycle to attached webhook', () => {
 test('form picker and sample RPC match current paginated API envelopes', () => {
     const listForms = readJson('rpcs/list_forms/api.imljson')
     const sample = readJson('rpcs/get_sample_submission/api.imljson')
-    const moduleSamples = readJson('modules/watch_submissions/samples.imljson')
+    const moduleSamples = readJson('modules/watch_public_link_submissions/samples.imljson')
 
     assert.equal(listForms.body.method, 'forms.list')
     assert.equal(listForms.url, '/api/v1')
@@ -237,7 +237,7 @@ test('form picker and sample RPC match current paginated API envelopes', () => {
 })
 
 test('static interface fallback is the envelope with untyped answers', () => {
-    const staticInterface = readJson('modules/watch_submissions/interface.static.imljson')
+    const staticInterface = readJson('modules/watch_public_link_submissions/interface.static.imljson')
     const buildSubmissionInterface = loadImlFunction('functions/buildSubmissionInterface.js', 'buildSubmissionInterface')
 
     const expected = buildSubmissionInterface([])
@@ -252,8 +252,8 @@ test('static interface fallback is the envelope with untyped answers', () => {
 
 test('abandoned submission fixture and interface match the event envelope', () => {
     const fixture = readJson('test/fixtures/submission.json')
-    const metadata = readJson('modules/watch_submissions/metadata.imljson')
-    const outputInterface = readJson('modules/watch_submissions/interface.imljson')
+    const metadata = readJson('modules/watch_public_link_submissions/metadata.imljson')
+    const outputInterface = readJson('modules/watch_public_link_submissions/interface.imljson')
     const buildSubmissionInterface = loadImlFunction('functions/buildSubmissionInterface.js', 'buildSubmissionInterface')
 
     assert.equal(outputInterface, 'rpc://getSubmissionInterface')
@@ -399,7 +399,7 @@ test('every module, webhook and RPC is declared and every reference resolves', (
 
     assert.deepEqual(
         modules.sort(),
-        ['cancel_request', 'create_request', 'get_request', 'make_api_call', 'remind_request', 'search_requests', 'watch_requests', 'watch_submissions']
+        ['cancel_request', 'create_request', 'get_request', 'make_api_call', 'remind_request', 'search_requests', 'watch_public_link_submissions', 'watch_requests']
     )
     for (const dir of modules) {
         const metadata = readJson(`modules/${dir}/metadata.imljson`)
