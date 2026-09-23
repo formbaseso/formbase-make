@@ -436,7 +436,7 @@ test('Watch Requests delegates lifecycle to the request webhook', () => {
 
     assert.equal(metadata.type, 'instant_trigger')
     assert.equal(metadata.webhook, 'request_webhook')
-    assert.match(metadata.description, /request\.completed, request\.expired, or request\.canceled/)
+    assert.match(metadata.description, /request\.completed, request\.expired or request\.canceled/)
     assert.deepEqual(moduleApi, {})
     assert.deepEqual(moduleParameters, [])
     assert.equal(readJson('modules/watch_requests/interface.imljson'), 'rpc://getRequestEventInterface')

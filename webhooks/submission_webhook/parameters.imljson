@@ -5,7 +5,7 @@
         "label": "Form",
         "required": true,
         "mappable": false,
-        "help": "The formbase form to watch for new submissions.",
+        "help": "The form to watch. Public-link submissions only; a completed request fires Watch Requests instead.",
         "options": {
             "store": "rpc://listForms"
         }
@@ -17,7 +17,7 @@
         "required": true,
         "mappable": false,
         "default": "submission_created",
-        "help": "Abandoned submissions require partial-submission tracking on the formbase workspace.",
+        "help": "Submission created fires for a new submission and again when the respondent updates it later (event type submission.updated). Submission abandoned needs partial-submission tracking on the workspace.",
         "options": [
             {
                 "label": "Submission created",
@@ -34,7 +34,7 @@
                         "required": true,
                         "mappable": false,
                         "default": "12h",
-                        "help": "The webhook fires after the submission has no saved changes for this long. The hourly sweep can add up to about one hour.",
+                        "help": "Fires after the submission has no saved changes for this long. The hourly sweep can add up to one hour.",
                         "options": [
                             {
                                 "label": "12 hours",

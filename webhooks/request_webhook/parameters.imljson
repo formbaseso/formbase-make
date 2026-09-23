@@ -5,7 +5,7 @@
         "label": "Form",
         "required": true,
         "mappable": false,
-        "help": "The formbase form whose requests to watch.",
+        "help": "The form whose requests to watch.",
         "options": {
             "store": "rpc://listForms"
         }
@@ -17,7 +17,7 @@
         "required": true,
         "mappable": false,
         "default": "request_completed",
-        "help": "A completed request fires Watch Requests alone, never Watch Public Link Submissions, so a scenario that uses both triggers on the same form receives one bundle per completion. Test requests never reach this trigger.",
+        "help": "A completed request fires Watch Requests only, never Watch Public Link Submissions. Test requests never reach this trigger.",
         "options": [
             {
                 "label": "Request completed",
