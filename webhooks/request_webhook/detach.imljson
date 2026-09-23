@@ -1,0 +1,10 @@
+{
+    "url": "/api/v1",
+    "method": "POST",
+    "body": {
+        "method": "webhooks.delete",
+        "params": {
+            "subscriptionId": "{{webhook.subscriptionId}}"
+        }
+    }
+}

@@ -1,0 +1,5 @@
+{
+    "name": "getRequestInterface",
+    "label": "Get Request Interface",
+    "connection": "formbase"
+}

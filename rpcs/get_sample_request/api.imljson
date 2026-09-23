@@ -1,0 +1,14 @@
+{
+    "url": "/api/v1",
+    "method": "POST",
+    "body": {
+        "method": "requests.sample",
+        "params": {
+            "formId": "{{webhook.formId}}",
+            "eventType": "{{webhook.eventType}}"
+        }
+    },
+    "response": {
+        "output": "{{body.data}}"
+    }
+}

@@ -1,0 +1,188 @@
+[
+    {
+        "name": "id",
+        "type": "text",
+        "label": "Event ID"
+    },
+    {
+        "name": "type",
+        "type": "text",
+        "label": "Event Type"
+    },
+    {
+        "name": "createdAt",
+        "type": "date",
+        "label": "Event Timestamp"
+    },
+    {
+        "name": "apiVersion",
+        "type": "text",
+        "label": "API Version"
+    },
+    {
+        "name": "test",
+        "type": "boolean",
+        "label": "Test Event"
+    },
+    {
+        "name": "data",
+        "type": "collection",
+        "label": "Data",
+        "spec": [
+            {
+                "name": "request",
+                "type": "collection",
+                "label": "Request",
+                "spec": [
+                    {
+                        "name": "id",
+                        "type": "text",
+                        "label": "Request ID"
+                    },
+                    {
+                        "name": "externalId",
+                        "type": "text",
+                        "label": "External ID"
+                    },
+                    {
+                        "name": "status",
+                        "type": "text",
+                        "label": "Status",
+                        "help": "completed, expired or canceled."
+                    },
+                    {
+                        "name": "outcome",
+                        "type": "text",
+                        "label": "Outcome",
+                        "help": "The recipient's verdict from the decision question: approve, decline or changes. Present only on a completed request with one."
+                    },
+                    {
+                        "name": "language",
+                        "type": "text",
+                        "label": "Language"
+                    },
+                    {
+                        "name": "recipient",
+                        "type": "collection",
+                        "label": "Recipient",
+                        "spec": [
+                            {
+                                "name": "email",
+                                "type": "email",
+                                "label": "Recipient Email"
+                            },
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "Recipient Name"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "metadata",
+                        "type": "any",
+                        "label": "Metadata"
+                    },
+                    {
+                        "name": "context",
+                        "type": "any",
+                        "label": "Context"
+                    },
+                    {
+                        "name": "createdAt",
+                        "type": "date",
+                        "label": "Created At"
+                    },
+                    {
+                        "name": "completedAt",
+                        "type": "date",
+                        "label": "Completed At"
+                    },
+                    {
+                        "name": "expiredAt",
+                        "type": "date",
+                        "label": "Expired At"
+                    },
+                    {
+                        "name": "canceledAt",
+                        "type": "date",
+                        "label": "Canceled At"
+                    },
+                    {
+                        "name": "cancelReason",
+                        "type": "text",
+                        "label": "Cancel Reason"
+                    }
+                ]
+            },
+            {
+                "name": "form",
+                "type": "collection",
+                "label": "Form",
+                "spec": [
+                    {
+                        "name": "id",
+                        "type": "text",
+                        "label": "Form ID"
+                    },
+                    {
+                        "name": "name",
+                        "type": "text",
+                        "label": "Form Name"
+                    },
+                    {
+                        "name": "snapshotId",
+                        "type": "text",
+                        "label": "Published Version ID"
+                    }
+                ],
+                "help": "Present only on request.completed."
+            },
+            {
+                "name": "submission",
+                "type": "collection",
+                "label": "Submission",
+                "spec": [
+                    {
+                        "name": "id",
+                        "type": "text",
+                        "label": "Submission ID"
+                    },
+                    {
+                        "name": "respondentEmail",
+                        "type": "email",
+                        "label": "Respondent Email"
+                    },
+                    {
+                        "name": "submittedAt",
+                        "type": "date",
+                        "label": "Submitted At"
+                    },
+                    {
+                        "name": "pdfUrl",
+                        "type": "url",
+                        "label": "Submission PDF Link"
+                    },
+                    {
+                        "name": "language",
+                        "type": "text",
+                        "label": "Submission Language"
+                    }
+                ],
+                "help": "Present only on request.completed."
+            },
+            {
+                "name": "answers",
+                "type": "any",
+                "label": "Answers",
+                "help": "Every answer keyed by field key. A choice answer is the option key; a repeating group is an array of rows keyed by member field key. Present only on request.completed."
+            },
+            {
+                "name": "display",
+                "type": "any",
+                "label": "Answers (display)",
+                "help": "Human-readable text for every answer, under the same keys as Answers. Present only on request.completed."
+            }
+        ]
+    }
+]

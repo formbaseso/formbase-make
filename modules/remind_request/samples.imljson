@@ -1,0 +1,49 @@
+{
+    "id": "req_2pmJk8Lq3RxYn4Wt5VbCdE",
+    "status": "pending",
+    "outcome": null,
+    "workspaceId": "ws_9aB2cD4eF6gH8iJ0kL2mN4",
+    "formId": "form_2pmJk8Lq3RxYn4Wt5VbCdE",
+    "formSnapshotId": "snap_7kQ2mN4pR6sT8uV0wX2yZ4",
+    "submissionId": null,
+    "createdVia": "api",
+    "isTest": false,
+    "language": "en",
+    "recipient": {
+        "email": "jane.doe@example.com",
+        "name": "Jane Doe"
+    },
+    "externalId": "run-42",
+    "metadata": {
+        "runId": "run-42"
+    },
+    "context": {
+        "account_id": "ACC-9"
+    },
+    "prefill": {
+        "your_name": "Jane Doe"
+    },
+    "readonlyKeys": [
+        "your_name"
+    ],
+    "documents": [],
+    "delivery": "email",
+    "deliveryStatus": "sent",
+    "hasCallback": false,
+    "callbackFailedAt": null,
+    "expiresAt": 1794787200000,
+    "createdAt": 1792195200000,
+    "updatedAt": 1792282000000,
+    "openedAt": 1792195500000,
+    "startedAt": null,
+    "lastActivityAt": 1792195500000,
+    "completedAt": null,
+    "expiredAt": null,
+    "canceledAt": null,
+    "canceledBy": null,
+    "cancelReason": null,
+    "dataPurgedAt": null,
+    "reminderStep": 0,
+    "remindersSent": 1,
+    "reminderDueAt": null
+}

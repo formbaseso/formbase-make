@@ -1,0 +1,13 @@
+{
+    "url": "/api/v1",
+    "method": "POST",
+    "body": {
+        "method": "fields.list",
+        "params": {
+            "formId": "{{parameters.formId}}"
+        }
+    },
+    "response": {
+        "output": "{{buildRequestInterface(body.data.items)}}"
+    }
+}

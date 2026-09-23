@@ -1,0 +1,6 @@
+{
+    "name": "request_webhook",
+    "label": "Request Webhook",
+    "type": "web",
+    "connection": "formbase"
+}

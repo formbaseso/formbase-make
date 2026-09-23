@@ -1,0 +1,121 @@
+[
+    {
+        "name": "formId",
+        "type": "select",
+        "label": "Form",
+        "required": true,
+        "mappable": false,
+        "help": "The published form the recipient completes.",
+        "options": {
+            "store": "rpc://listForms"
+        }
+    },
+    {
+        "name": "prefill",
+        "type": "json",
+        "label": "Prefill",
+        "required": false,
+        "help": "JSON object of initial answers keyed by field key, for example `{\"company_name\": \"Acme\"}`. A choice question takes the option key, a date YYYY-MM-DD, a repeating group an array of rows. Find keys with Make an API Call and `fields.list`."
+    },
+    {
+        "name": "context",
+        "type": "json",
+        "label": "Context",
+        "required": false,
+        "help": "JSON object of hidden-field values keyed by field key. The recipient never sees or edits them; they come back in the answers under the same key."
+    },
+    {
+        "name": "readonly",
+        "type": "array",
+        "label": "Read-only fields",
+        "required": false,
+        "help": "Field keys the recipient may see but not change. Every key must also be prefilled.",
+        "spec": {
+            "type": "text",
+            "label": "Field key"
+        }
+    },
+    {
+        "name": "recipientEmail",
+        "type": "email",
+        "label": "Recipient Email",
+        "required": false,
+        "help": "Required to send the invitation or reminders by email."
+    },
+    {
+        "name": "recipientName",
+        "type": "text",
+        "label": "Recipient Name",
+        "required": false
+    },
+    {
+        "name": "delivery",
+        "type": "select",
+        "label": "Delivery",
+        "required": false,
+        "default": "none",
+        "help": "Whether formbase emails the invitation. With `none` the scenario delivers the request link itself.",
+        "options": [
+            {
+                "label": "I deliver the link myself",
+                "value": "none"
+            },
+            {
+                "label": "Email the invitation",
+                "value": "email"
+            }
+        ]
+    },
+    {
+        "name": "externalId",
+        "type": "text",
+        "label": "External ID",
+        "required": false,
+        "help": "Your own id for this request, for example a run or ticket id. Searchable, echoed in every event, and used as the idempotency key: creating again with the same external ID and body returns the existing request."
+    },
+    {
+        "name": "language",
+        "type": "text",
+        "label": "Language",
+        "required": false,
+        "advanced": true,
+        "help": "BCP-47 code of a published translation, for example `de`. The form opens and the invitation is written in this language. Empty uses the form's default."
+    },
+    {
+        "name": "reminders",
+        "type": "array",
+        "label": "Reminders",
+        "required": false,
+        "advanced": true,
+        "help": "Idle offsets before a reminder email, for example `2d` and `5d`, up to five. Empty inherits the form's reminder schedule.",
+        "spec": {
+            "type": "text",
+            "label": "Offset"
+        }
+    },
+    {
+        "name": "expiresAt",
+        "type": "date",
+        "label": "Expires At",
+        "required": false,
+        "advanced": true,
+        "help": "When the request link stops working. Default 30 days, at most 365."
+    },
+    {
+        "name": "metadata",
+        "type": "json",
+        "label": "Metadata",
+        "required": false,
+        "advanced": true,
+        "help": "JSON object for your own bookkeeping. Never shown to the recipient, echoed in every event and in Get a Request."
+    },
+    {
+        "name": "test",
+        "type": "boolean",
+        "label": "Test Request",
+        "required": false,
+        "default": false,
+        "advanced": true,
+        "help": "A dry run: nothing is emailed, the link opens and can be completed, and the request never counts against the quota. Test requests are left out of Search Requests and never reach Watch Requests or Watch Submissions."
+    }
+]

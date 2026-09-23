@@ -1,0 +1,45 @@
+[
+    {
+        "name": "id",
+        "type": "text",
+        "label": "Request ID"
+    },
+    {
+        "name": "status",
+        "type": "text",
+        "label": "Status"
+    },
+    {
+        "name": "url",
+        "type": "url",
+        "label": "Request Link",
+        "help": "The secret link the recipient opens. Persist it if the scenario delivers it itself."
+    },
+    {
+        "name": "deliveryStatus",
+        "type": "text",
+        "label": "Delivery Status",
+        "help": "not_requested unless the invitation was emailed, then queued, sent, failed or bounced."
+    },
+    {
+        "name": "expiresAt",
+        "type": "number",
+        "label": "Expires At (Unix ms)"
+    },
+    {
+        "name": "createdAt",
+        "type": "number",
+        "label": "Created At (Unix ms)"
+    },
+    {
+        "name": "externalId",
+        "type": "text",
+        "label": "External ID"
+    },
+    {
+        "name": "deduplicated",
+        "type": "boolean",
+        "label": "Deduplicated",
+        "help": "True when an existing request was returned for the same external ID."
+    }
+]

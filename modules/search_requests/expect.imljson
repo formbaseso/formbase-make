@@ -1,0 +1,61 @@
+[
+    {
+        "name": "formId",
+        "type": "select",
+        "label": "Form",
+        "required": true,
+        "mappable": false,
+        "help": "The form whose requests to list.",
+        "options": {
+            "store": "rpc://listForms"
+        }
+    },
+    {
+        "name": "status",
+        "type": "select",
+        "label": "Status",
+        "required": false,
+        "help": "Empty lists every status.",
+        "options": [
+            {
+                "label": "Pending",
+                "value": "pending"
+            },
+            {
+                "label": "Completed",
+                "value": "completed"
+            },
+            {
+                "label": "Expired",
+                "value": "expired"
+            },
+            {
+                "label": "Canceled",
+                "value": "canceled"
+            }
+        ]
+    },
+    {
+        "name": "externalId",
+        "type": "text",
+        "label": "External ID",
+        "required": false,
+        "help": "Only requests created with this external ID."
+    },
+    {
+        "name": "includeTest",
+        "type": "boolean",
+        "label": "Include Test Requests",
+        "required": false,
+        "default": false,
+        "advanced": true
+    },
+    {
+        "name": "limit",
+        "type": "uinteger",
+        "label": "Limit",
+        "required": false,
+        "default": 25,
+        "help": "Maximum number of requests to return."
+    }
+]

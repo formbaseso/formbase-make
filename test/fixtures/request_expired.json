@@ -1,0 +1,20 @@
+{
+    "id": "evt_01HX9G8N0F4P2K7Q3S5V8Y1Z2C",
+    "type": "request.expired",
+    "createdAt": "2026-05-20T09:00:00.000Z",
+    "apiVersion": "2026-09-22",
+    "test": false,
+    "data": {
+        "request": {
+            "id": "req_2pmJk8Lq3RxYn4Wt5VbCdE",
+            "externalId": "run-42",
+            "status": "expired",
+            "language": "en",
+            "recipient": { "email": "jane.doe@example.com", "name": "Jane Doe" },
+            "metadata": { "runId": "run-42" },
+            "context": { "account_id": "ACC-9" },
+            "createdAt": "2026-04-20T09:00:00.000Z",
+            "expiredAt": "2026-05-20T09:00:00.000Z"
+        }
+    }
+}

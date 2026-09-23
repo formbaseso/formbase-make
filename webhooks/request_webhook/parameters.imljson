@@ -1,0 +1,36 @@
+[
+    {
+        "name": "formId",
+        "type": "select",
+        "label": "Form",
+        "required": true,
+        "mappable": false,
+        "help": "The formbase form whose requests to watch.",
+        "options": {
+            "store": "rpc://listForms"
+        }
+    },
+    {
+        "name": "eventType",
+        "type": "select",
+        "label": "Event",
+        "required": true,
+        "mappable": false,
+        "default": "request_completed",
+        "help": "A completed request also fires Watch Submissions, so a scenario that uses both triggers on the same form receives two bundles for one completion. Test requests never reach this trigger.",
+        "options": [
+            {
+                "label": "Request completed",
+                "value": "request_completed"
+            },
+            {
+                "label": "Request expired",
+                "value": "request_expired"
+            },
+            {
+                "label": "Request canceled",
+                "value": "request_canceled"
+            }
+        ]
+    }
+]

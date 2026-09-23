@@ -1,0 +1,16 @@
+[
+    {
+        "name": "requestId",
+        "type": "text",
+        "label": "Request ID",
+        "required": true,
+        "help": "The `id` returned by Create a Request, Search Requests or a Watch Requests event."
+    },
+    {
+        "name": "reason",
+        "type": "text",
+        "label": "Reason",
+        "required": false,
+        "help": "Why the request is canceled. Stored on the request and carried by the request.canceled event."
+    }
+]
