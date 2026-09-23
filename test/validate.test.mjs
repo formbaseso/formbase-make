@@ -449,8 +449,8 @@ test('Watch Requests delegates lifecycle to the request webhook', () => {
         eventType.options.map((option) => option.value),
         ['request_completed', 'request_expired', 'request_canceled']
     )
-    // A completed request also fires Watch Submissions; the help says so instead of suppressing it.
-    assert.match(eventType.help, /Watch Submissions/)
+    // One channel, one event: a completed request never fires Watch Submissions, and the help says so.
+    assert.match(eventType.help, /never Watch Submissions/)
 
     // Same unsigned receive as the submission webhook: Make never sees the raw body.
     assert.deepEqual(webhook, readJson('webhooks/submission_webhook/api.imljson'))

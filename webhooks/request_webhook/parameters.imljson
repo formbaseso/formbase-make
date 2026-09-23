@@ -17,7 +17,7 @@
         "required": true,
         "mappable": false,
         "default": "request_completed",
-        "help": "A completed request also fires Watch Submissions, so a scenario that uses both triggers on the same form receives two bundles for one completion. Test requests never reach this trigger.",
+        "help": "A completed request fires Watch Requests alone, never Watch Submissions, so a scenario that uses both triggers on the same form receives one bundle per completion. Test requests never reach this trigger.",
         "options": [
             {
                 "label": "Request completed",

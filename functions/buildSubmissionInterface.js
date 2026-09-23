@@ -128,17 +128,6 @@ function buildSubmissionInterface(items) {
                     label: 'Answers (display)',
                     help: 'Human-readable text for every answer, under the same keys as Answers.',
                     spec: displaySpec
-                },
-                {
-                    name: 'request',
-                    type: 'collection',
-                    label: 'Request',
-                    help: 'Present only when the submission answered a request.',
-                    spec: [
-                        { name: 'id', type: 'text', label: 'Request ID' },
-                        { name: 'externalId', type: 'text', label: 'External ID' },
-                        { name: 'metadata', type: 'any', label: 'Metadata' }
-                    ]
                 }
             ]
         }

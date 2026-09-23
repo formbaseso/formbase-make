@@ -1,7 +1,7 @@
 {
     "name": "watchSubmissions",
     "label": "Watch Submissions",
-    "description": "Triggers when a customer completes a request or submits a form, or abandons a partial submission. Event type is submission.completed, submission.updated, or submission.abandoned. Answers arrive in data.answers keyed by field key, readable text in data.display, and data.request carries the request ID and external ID when a request was answered.",
+    "description": "Triggers when a customer submits the form through its share link, or abandons a partial submission. Event type is submission.completed, submission.updated, or submission.abandoned. Answers arrive in data.answers keyed by field key and readable text in data.display. A completed request fires Watch Requests instead, never this trigger.",
     "type": "instant_trigger",
     "connection": "formbase",
     "webhook": "submission_webhook"
