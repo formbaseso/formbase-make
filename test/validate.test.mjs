@@ -449,8 +449,8 @@ test('Watch Requests delegates lifecycle to the request webhook', () => {
         eventType.options.map((option) => option.value),
         ['request_completed', 'request_expired', 'request_canceled']
     )
-    // One channel, one event: a completed request never fires Watch Submissions, and the help says so.
-    assert.match(eventType.help, /never Watch Submissions/)
+    // One channel, one event: a completed request never fires Watch Public Link Submissions, and the help says so.
+    assert.match(eventType.help, /never Watch Public Link Submissions/)
 
     // Same unsigned receive as the submission webhook: Make never sees the raw body.
     assert.deepEqual(webhook, readJson('webhooks/submission_webhook/api.imljson'))
@@ -491,7 +491,7 @@ test('request event interface carries the request block for every type and answe
         'createdAt', 'completedAt', 'expiredAt', 'canceledAt', 'cancelReason'
     ])
 
-    // The per-key half is the one Watch Submissions builds, so a field key maps under the same pill.
+    // The per-key half is the one Watch Public Link Submissions builds, so a field key maps under the same pill.
     const submission = iml.buildSubmissionInterface(FIELD_LIST).find((field) => field.name === 'data')
     for (const name of ['form', 'submission', 'answers', 'display']) {
         assert.deepEqual(completedData.spec.find((field) => field.name === name), submission.spec.find((field) => field.name === name))

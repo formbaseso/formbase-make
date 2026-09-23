@@ -5,7 +5,7 @@
  * completed, the same `answers` and `display` maps a `request.completed` event
  * carries. The summary half is fixed; the per-form half comes from
  * `buildSubmissionInterface`, so a field key is mappable under the same pill
- * whether the answers arrive through Watch Submissions, Watch Requests or a
+ * whether the answers arrive through Watch Public Link Submissions, Watch Requests or a
  * Get a Request call.
  *
  * Called from `rpcs/get_request_interface/api.imljson` as

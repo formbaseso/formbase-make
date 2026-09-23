@@ -1,5 +1,5 @@
 /**
- * Builds the Watch Submissions output interface from `fields.list`.
+ * Builds the Watch Public Link Submissions output interface from `fields.list`.
  *
  * Every event is the formbase envelope `{ id, type, createdAt, apiVersion,
  * test, data }`. The envelope half is fixed; the per-form half is not, so the
