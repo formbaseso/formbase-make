@@ -12,6 +12,7 @@ Git-tracked mirror of formbase custom app configuration for [Make Developer Hub]
 - Dynamic sample payload from `submissions.sample`
 - Dynamic output interface from `fields.list`, so every answer is mappable under its own field key: a choice answer as its option key, a multi-choice answer as a list of keys, a matrix as one item per row, a repeating group as an array of rows
 - Universal **Make an API Call** module for other formbase JSON-RPC methods
+- Unsigned webhook, by necessity: a Make custom-app webhook sees only the parsed `body`, `headers` and `query`, never the raw bytes, and holds no per-subscription secret at receive time, so `X-formbase-Signature` cannot be verified here. Deliveries are protected by the unguessable `hook.make.com` URL over HTTPS; Zapier and n8n verify signatures because their runtimes expose the raw body
 - Every event is the formbase envelope `{ id, type, createdAt, apiVersion, test, data }`: `data.answers` holds each answer once under its field key, `data.display` the readable text under the same key, `data.submission` the email/date/PDF/language
 - Event `type` values: `submission.completed`, `submission.updated`, and `submission.abandoned`
 

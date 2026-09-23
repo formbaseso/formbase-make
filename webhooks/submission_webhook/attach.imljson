@@ -8,7 +8,7 @@
             "targetUrl": "{{webhook.url}}",
             "provider": "make",
             "eventType": "{{parameters.eventType}}",
-            "idleWindow": "{{ifempty(parameters.idleWindow, undefined)}}"
+            "idleWindow": "{{if(parameters.eventType = 'submission_abandoned', parameters.idleWindow, undefined)}}"
         }
     },
     "response": {

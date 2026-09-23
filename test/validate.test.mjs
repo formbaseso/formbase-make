@@ -153,8 +153,9 @@ test('instant trigger delegates lifecycle to attached webhook', () => {
     assert.equal(attach.body.params.formId, '{{parameters.formId}}')
     assert.equal(attach.body.params.provider, 'make')
     assert.equal(attach.body.params.eventType, '{{parameters.eventType}}')
-    // A created subscription must not send idleWindow at all; `undefined` makes Make omit the key.
-    assert.equal(attach.body.params.idleWindow, '{{ifempty(parameters.idleWindow, undefined)}}')
+    // A created subscription must not send idleWindow at all, not even one left over from a
+    // previous abandoned selection; `undefined` makes Make omit the key.
+    assert.equal(attach.body.params.idleWindow, "{{if(parameters.eventType = 'submission_abandoned', parameters.idleWindow, undefined)}}")
     assert.equal(attach.response.data.subscriptionId, '{{body.data.subscriptionId}}')
 
     assert.equal(detach.body.method, 'webhooks.delete')
