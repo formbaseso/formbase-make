@@ -35,6 +35,42 @@ function buildSubmissionInterface(items) {
     }
     // Choice questions whose answer is a list of option keys.
     var MULTI_OPTION_TYPES = { checkbox: true, 'picture-choice': true, ranking: true }
+    // A booking and a payment answer are objects (formbase
+    // docs/external-api.md § Events, "Bookings and payments"), so each
+    // property is mappable on its own.
+    var OBJECT_SPEC_BY_INPUT_TYPE = {
+        'schedule-appointment': [
+            { name: 'status', type: 'text', label: 'Status' },
+            { name: 'start', type: 'date', label: 'Start' },
+            { name: 'end', type: 'date', label: 'End' },
+            { name: 'timeZone', type: 'text', label: 'Time Zone' },
+            {
+                name: 'attendee',
+                type: 'collection',
+                label: 'Attendee',
+                spec: [
+                    { name: 'name', type: 'text', label: 'Name' },
+                    { name: 'email', type: 'email', label: 'Email' }
+                ]
+            },
+            { name: 'meetingUrl', type: 'url', label: 'Meeting URL' },
+            { name: 'eventTitle', type: 'text', label: 'Event Title' },
+            { name: 'provider', type: 'text', label: 'Provider' },
+            { name: 'providerBookingId', type: 'text', label: 'Provider Booking ID' }
+        ],
+        payment: [
+            { name: 'status', type: 'text', label: 'Status' },
+            { name: 'amount', type: 'number', label: 'Amount' },
+            { name: 'currency', type: 'text', label: 'Currency' },
+            { name: 'amountRefunded', type: 'number', label: 'Amount Refunded' },
+            { name: 'receiptUrl', type: 'url', label: 'Receipt URL' },
+            { name: 'paidAt', type: 'date', label: 'Paid At' },
+            { name: 'refundedAt', type: 'date', label: 'Refunded At' },
+            { name: 'disputedAt', type: 'date', label: 'Disputed At' },
+            { name: 'provider', type: 'text', label: 'Provider' },
+            { name: 'providerPaymentIntentId', type: 'text', label: 'Provider Payment Intent ID' }
+        ]
+    }
 
     function label(field) {
         return field.title || field.key
@@ -52,6 +88,9 @@ function buildSubmissionInterface(items) {
                 rowSpec.push({ name: field.rows[r].key, type: 'text', label: field.rows[r].label || field.rows[r].key })
             }
             return { name: field.key, type: 'collection', label: label(field), spec: rowSpec }
+        }
+        if (OBJECT_SPEC_BY_INPUT_TYPE[field.type]) {
+            return { name: field.key, type: 'collection', label: label(field), spec: OBJECT_SPEC_BY_INPUT_TYPE[field.type] }
         }
         return { name: field.key, type: TYPE_BY_INPUT_TYPE[field.type] || 'any', label: label(field) }
     }
@@ -121,7 +160,7 @@ function buildSubmissionInterface(items) {
                     name: 'answers',
                     type: 'collection',
                     label: 'Answers',
-                    help: 'Every answer keyed by field key. A choice answer is the option key; a repeating group is an array of rows keyed by member field key.',
+                    help: 'Every answer keyed by field key. A choice answer is the option key; a repeating group is an array of rows keyed by member field key; a booking or a payment is an object.',
                     spec: answerSpec
                 },
                 {

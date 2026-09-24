@@ -2,7 +2,7 @@
     "id": "evt_01HX9G8N0F4P2K7Q3S5V8Y1Z2A",
     "type": "submission.abandoned",
     "createdAt": "2026-04-26T14:32:18.412Z",
-    "apiVersion": "2026-09-22",
+    "apiVersion": "2026-09-24",
     "test": false,
     "data": {
         "form": {
@@ -22,12 +22,37 @@
         "answers": {
             "your_name": "Jane Doe",
             "rating": 5,
-            "attendees": [{ "attendee_name": "Grace Hopper" }, { "attendee_name": "Alan Turing" }]
+            "attendees": [{ "attendee_name": "Grace Hopper" }, { "attendee_name": "Alan Turing" }],
+            "book_a_call": {
+                "status": "confirmed",
+                "start": "2026-04-29T07:00:00.000Z",
+                "end": "2026-04-29T07:30:00.000Z",
+                "timeZone": "Europe/Oslo",
+                "attendee": { "name": "Jane Doe", "email": "jane.doe@example.com" },
+                "meetingUrl": "https://app.cal.com/video/example",
+                "provider": "cal.com",
+                "providerBookingId": "booking_abc123",
+                "eventTitle": "Intro call"
+            },
+            "pay_the_fee": {
+                "status": "paid",
+                "amount": 40,
+                "currency": "USD",
+                "amountRefunded": 0,
+                "receiptUrl": "https://pay.stripe.com/receipts/example",
+                "paidAt": "2026-04-26T14:30:00.000Z",
+                "refundedAt": null,
+                "disputedAt": null,
+                "provider": "stripe",
+                "providerPaymentIntentId": "pi_abc123"
+            }
         },
         "display": {
             "your_name": "Jane Doe",
             "rating": "5",
-            "attendees": "Grace Hopper, Alan Turing"
+            "attendees": "Grace Hopper, Alan Turing",
+            "book_a_call": "Intro call · Apr 29, 2026, 9:00 AM - 9:30 AM (Europe/Oslo) · Jane Doe <jane.doe@example.com> · https://app.cal.com/video/example",
+            "pay_the_fee": "$40.00 USD · Paid"
         }
     }
 }

@@ -97,7 +97,7 @@
                 "name": "answers",
                 "type": "any",
                 "label": "Answers",
-                "help": "Every answer keyed by field key. A choice answer is the option key; a repeating group is an array of rows keyed by member field key."
+                "help": "Every answer keyed by field key. A choice answer is the option key; a repeating group is an array of rows keyed by member field key; a booking or a payment is an object."
             },
             {
                 "name": "display",

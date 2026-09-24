@@ -337,7 +337,9 @@ test('dynamic interface RPC builds answer fields from the published field list',
             type: 'group',
             repeating: true,
             members: [{ key: 'attendee_name', type: 'text', title: 'Attendee name', required: true, prefillable: true }]
-        }
+        },
+        { key: 'book_a_call', type: 'schedule-appointment', title: 'Book a call', required: false, prefillable: false },
+        { key: 'pay_the_fee', type: 'payment', title: 'Pay the fee', required: false, prefillable: false }
     ])
 
     assertInterfaceFields(built)
@@ -347,7 +349,7 @@ test('dynamic interface RPC builds answer fields from the published field list',
     const answer = (name) => answers.spec.find((field) => field.name === name)
 
     const answerKeys = answers.spec.map((field) => field.name)
-    assert.deepEqual(answerKeys, ['your_name', 'rating', 'signed_on', 'plan', 'topics', 'satisfaction', 'account_id', 'total', 'attendees'])
+    assert.deepEqual(answerKeys, ['your_name', 'rating', 'signed_on', 'plan', 'topics', 'satisfaction', 'account_id', 'total', 'attendees', 'book_a_call', 'pay_the_fee'])
     assert.deepEqual(display.spec.map((field) => field.name), answerKeys)
     assert.equal(display.spec.find((field) => field.name === 'plan').label, 'Plan (display)')
 
@@ -376,17 +378,36 @@ test('dynamic interface RPC builds answer fields from the published field list',
     assert.deepEqual(group.spec.spec.map((field) => field.name), ['attendee_name'])
     assert.equal(display.spec.find((field) => field.name === 'attendees').type, 'text')
 
+    // A booking and a payment are objects, so each property is mappable on its own.
+    const booking = answer('book_a_call')
+    assert.equal(booking.type, 'collection')
+    assert.deepEqual(booking.spec.map((field) => field.name), ['status', 'start', 'end', 'timeZone', 'attendee', 'meetingUrl', 'eventTitle', 'provider', 'providerBookingId'])
+    assert.equal(booking.spec.find((field) => field.name === 'start').type, 'date')
+    assert.deepEqual(booking.spec.find((field) => field.name === 'attendee').spec.map((field) => field.name), ['name', 'email'])
+    const payment = answer('pay_the_fee')
+    assert.equal(payment.type, 'collection')
+    assert.deepEqual(payment.spec.map((field) => field.name), ['status', 'amount', 'currency', 'amountRefunded', 'receiptUrl', 'paidAt', 'refundedAt', 'disputedAt', 'provider', 'providerPaymentIntentId'])
+    assert.equal(payment.spec.find((field) => field.name === 'amount').type, 'number')
+    assert.equal(display.spec.find((field) => field.name === 'pay_the_fee').type, 'text')
+
     // Every key the fixture carries is mappable, under both collections.
     const fixture = readJson('test/fixtures/submission.json')
     const fixtureInterface = buildSubmissionInterface([
         { key: 'your_name', type: 'text', title: 'Your name' },
         { key: 'rating', type: 'rating', title: 'Rating' },
-        { key: 'attendees', type: 'group', repeating: true, members: [{ key: 'attendee_name', type: 'text', title: 'Attendee name' }] }
+        { key: 'attendees', type: 'group', repeating: true, members: [{ key: 'attendee_name', type: 'text', title: 'Attendee name' }] },
+        { key: 'book_a_call', type: 'schedule-appointment', title: 'Book a call' },
+        { key: 'pay_the_fee', type: 'payment', title: 'Pay the fee' }
     ])
     const fixtureAnswers = fixtureInterface
         .find((field) => field.name === 'data')
         .spec.find((field) => field.name === 'answers')
     assert.deepEqual(fixtureAnswers.spec.map((field) => field.name), Object.keys(fixture.data.answers))
+    // Every property of the fixture's booking and payment has an interface entry.
+    for (const key of ['book_a_call', 'pay_the_fee']) {
+        const spec = fixtureAnswers.spec.find((field) => field.name === key).spec
+        assert.deepEqual(spec.map((field) => field.name).sort(), Object.keys(fixture.data.answers[key]).sort())
+    }
 })
 
 test('universal API module forwards method and JSON params through current envelope', () => {
