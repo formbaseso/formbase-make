@@ -72,6 +72,16 @@
                         "label": "Submitted At"
                     },
                     {
+                        "name": "updatedAt",
+                        "type": "date",
+                        "label": "Last Edited At"
+                    },
+                    {
+                        "name": "editCount",
+                        "type": "uinteger",
+                        "label": "Edit Count"
+                    },
+                    {
                         "name": "pdfUrl",
                         "type": "url",
                         "label": "Submission PDF Link"

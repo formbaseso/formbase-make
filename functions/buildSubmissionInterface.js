@@ -111,6 +111,8 @@ function buildSubmissionInterface(items) {
                         { name: 'id', type: 'text', label: 'Submission ID' },
                         { name: 'respondentEmail', type: 'email', label: 'Respondent Email' },
                         { name: 'submittedAt', type: 'date', label: 'Submitted At' },
+                        { name: 'updatedAt', type: 'date', label: 'Last Edited At' },
+                        { name: 'editCount', type: 'uinteger', label: 'Edit Count' },
                         { name: 'pdfUrl', type: 'url', label: 'Submission PDF Link' },
                         { name: 'language', type: 'text', label: 'Submission Language' }
                     ]

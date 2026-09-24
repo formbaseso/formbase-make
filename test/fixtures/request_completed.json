@@ -26,6 +26,8 @@
             "id": "sub_9aB2cD4eF6gH8iJ0kL2mN4",
             "respondentEmail": "jane.doe@example.com",
             "submittedAt": "2026-04-26T14:32:18.000Z",
+            "updatedAt": null,
+            "editCount": 0,
             "pdfUrl": "https://api.formbase.so/api/storage/00000000-0000-4000-8000-000000000000",
             "language": "en"
         },

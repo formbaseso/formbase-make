@@ -294,7 +294,7 @@ test('abandoned submission fixture and interface match the event envelope', () =
     const submissionInterface = dataInterface.spec.find((field) => field.name === 'submission')
     assert.deepEqual(
         submissionInterface.spec.map((field) => field.name),
-        ['id', 'respondentEmail', 'submittedAt', 'pdfUrl', 'language']
+        ['id', 'respondentEmail', 'submittedAt', 'updatedAt', 'editCount', 'pdfUrl', 'language']
     )
     for (const name of ['answers', 'display']) {
         assert.equal(dataInterface.spec.find((field) => field.name === name)?.type, 'collection')
